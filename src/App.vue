@@ -25,6 +25,9 @@ export default {
             return this.$store.state.checkedMusic.length
         }
     },
+    created () {
+        this.$store.commit('setMusic')
+    },
     components: {
         ToolBar,
         MusicView,

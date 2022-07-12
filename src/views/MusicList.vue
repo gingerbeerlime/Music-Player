@@ -57,35 +57,35 @@
                 <ul class="list-box">
                     <li>
                         <div class="thumb-img">
-                            <img src="../assets/img/thumb/1.jpg" alt="playlist_thumbnail">
+                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
                         </div>
                         <p class="playlist-name">요즘 많이 듣는 곡</p>
                         <span class="music-count">10</span>
                     </li>
                     <li>
                         <div class="thumb-img">
-                            <img src="../assets/img/thumb/1.jpg" alt="playlist_thumbnail">
+                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
                         </div>
                         <p class="playlist-name">요즘 많이 듣는 곡</p>
                         <span class="music-count">10</span>
                     </li>
                     <li>
                         <div class="thumb-img">
-                            <img src="../assets/img/thumb/1.jpg" alt="playlist_thumbnail">
+                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
                         </div>
                         <p class="playlist-name">요즘 많이 듣는 곡</p>
                         <span class="music-count">10</span>
                     </li>
                     <li>
                         <div class="thumb-img">
-                            <img src="../assets/img/thumb/1.jpg" alt="playlist_thumbnail">
+                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
                         </div>
                         <p class="playlist-name">요즘 많이 듣는 곡</p>
                         <span class="music-count">10</span>
                     </li>
                     <li>
                         <div class="thumb-img">
-                            <img src="../assets/img/thumb/1.jpg" alt="playlist_thumbnail">
+                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
                         </div>
                         <p class="playlist-name">비오는 날 듣기 좋은 명곡들 플레이리스트</p>
                         <span class="music-count">3</span>
@@ -252,7 +252,7 @@ input[type="checkbox"] {
     font-size: 8px;
     position: absolute;
     top: -1.2px;
-    right: 0;
+    right: -0.5px;
     z-index: 750;
 }
 .check-btn:checked + .icons-check {

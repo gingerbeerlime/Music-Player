@@ -1,15 +1,15 @@
 <template>
     <div id="album-view">
         <!-- 앨범사진 -->
-        <div class="album-bg">
+        <div class="album-bg" >
             <div class="album-photo">
-                <img src="../assets/img/thumb/1.jpg" alt="album-photo">
+                <img src="../assets/img/thumb/strawberrymoon_iu.jpg" alt="album-photo">
             </div>
         </div>
         <!-- 노래 제목 & 가수 -->
         <div class="music-info">
-            <h2 class="music-title">POP!</h2>
-            <p class="artist-name">나연 (TWICE)</p>
+            <h2 class="music-title">{{ $store.state.currentMusic.title }}</h2>
+            <p class="artist-name">{{ $store.state.currentMusic.artist }}</p>
         </div>
         <!-- 좋아요 버튼 -->
         <div class="like-btn">
@@ -20,7 +20,6 @@
 
 <script>
 export default {
-
 }
 </script>
 

@@ -1,20 +1,26 @@
 <template>
     <div id="player-bar">
         <!-- 재생바 -->
-        <progress class="playing-bar" value="20" min="0" max="100"></progress>
+        <progress class="playing-bar" :value="currentPosition" min="0" max="100"></progress>
         <!-- 재생 상태 -->
         <ul class="playing-status">
             <!-- 남은 시간 -->
-            <li class="current-time">00:29</li>
+            <li class="current-time">{{ $store.getters.getCurrentTime }}</li>
             <!-- 재생 시간 -->
-            <li class="running-time">04:33</li>
+            <li class="running-time">{{ $store.getters.getPlayTime }}</li>
         </ul>
     </div>
 </template>
 
 <script>
 export default {
-
+    computed: {
+        currentPosition () {
+            const nowPosition = 100 - ((this.$store.state.currentTime / this.$store.state.playTime) * 100)
+            console.log(nowPosition)
+            return nowPosition
+        }
+    }
 }
 </script>
 

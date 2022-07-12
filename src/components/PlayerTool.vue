@@ -10,10 +10,17 @@
                         <i class="fa-solid fa-backward-step"></i>
                     </li>
                     <li class="play">
-                        <!-- 재생중 -->
-                        <!-- <i class="fa-solid fa-play"></i> -->
-                        <!-- 일시정지 -->
-                        <i class="fa-solid fa-pause"></i>
+                        <!-- 일시정지 버튼-->
+                        <i
+                            v-if="$store.state.play"
+                            @click="stopMusic"
+                            class="fa-solid fa-pause"
+                            ></i>
+                        <!-- 재생 버튼 -->
+                        <i
+                            v-else class="fa-solid fa-play"
+                            @click="startMusic"
+                            ></i>
                     </li>
                     <li class="next">
                         <i class="fa-solid fa-forward-step"></i>
@@ -31,7 +38,14 @@
 
 <script>
 export default {
-
+    methods: {
+        startMusic () {
+            this.$store.commit('startMusic')
+        },
+        stopMusic () {
+            this.$store.commit('stopMusic')
+        }
+    }
 }
 </script>
 
