@@ -4,7 +4,7 @@
             <div class="tab-btns-bg"></div>
             <input type="radio" name="playlist" id="tab1" checked>
             <label for="tab1" class="tab-btn btn-list-all">
-                <p>곡<span>10</span></p>
+                <p>곡<span>{{ $store.getters.getTotalMusicCount }}</span></p>
             </label>
             <input type="radio" name="playlist" id="tab2">
             <label for="tab2" class="tab-btn btn-list-created">
@@ -26,11 +26,11 @@
                 </header>
                 <ul class="list-box">
                     <li
-                        v-for="item in $store.state.musicList"
+                        v-for="(item, index) in $store.state.rawMusicList"
                         :key="item.key"
-                        @dblclick="playMusic(item)"
+                        @dblclick="changeMusic(item, index)"
                         @click="selectMusic(item)"
-                        :class="{'_click': $store.state.selectedMusic === item, 'playing-now': $store.state.currentMusic === item}"
+                        :class="{'_click': $store.state.selectedMusic === item, 'playing-now': $store.getters.getCurrentMusic === item}"
                         >
                         <!-- checkbox -->
                         <label class="checkbox-wrap">
@@ -40,10 +40,13 @@
                                 <i class="fa-solid fa-check"></i>
                             </div>
                         </label>
-                        <!-- 이퀄라이저 아이콘 -->
-                        <!-- <div class="playing-icon"></div> -->
                         <!-- music title -->
-                        <p class="title">{{ item.title }}</p>
+                        <p class="title">
+                            <audio-visual-icon
+                                v-if="$store.state.play && $store.getters.getCurrentMusic === item"
+                            ></audio-visual-icon>
+                            {{ item.title }}
+                        </p>
                         <!-- artist -->
                         <p class="artist">{{ item.artist }}</p>
                     </li>
@@ -96,19 +99,24 @@
 </template>
 
 <script>
+import AudioVisualIcon from '../components/icon/AudioVisualIcon.vue'
+
 export default {
     methods: {
         toggleCheck (item) {
             this.$store.commit('toggleCheck', { item })
         },
-        playMusic (item) {
-            this.$store.commit('playMusic', { item })
+        changeMusic (item, index) {
+            this.$store.commit('changeMusic', { item, index })
+            this.$store.commit('startMusic')
         },
         selectMusic (item) {
             this.$store.commit('selectMusic', { item })
         }
+    },
+    components: {
+        AudioVisualIcon
     }
-
 }
 </script>
 
@@ -214,7 +222,7 @@ input[type="radio"] {
     padding-bottom: 40px;
     overflow: scroll;
 }
-.play-list-all .list-box li {
+.play-list-all .list-box > li {
     width: 100%;
     height: 37px;
     display: flex;
@@ -265,6 +273,8 @@ input[type="checkbox"] {
     line-height: 37px;
 }
 .play-list-all .list-box .title {
+    display: flex;
+    align-items: center;
     width: 150px;
     max-width: 160px;
     overflow: hidden;

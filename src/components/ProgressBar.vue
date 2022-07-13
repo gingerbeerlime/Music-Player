@@ -17,7 +17,7 @@ export default {
     computed: {
         currentPosition () {
             const nowPosition = 100 - ((this.$store.state.currentTime / this.$store.state.playTime) * 100)
-            console.log(nowPosition)
+            // console.log(nowPosition)
             return nowPosition
         }
     }

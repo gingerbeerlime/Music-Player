@@ -6,23 +6,25 @@
             </li>
             <li class="play-btns">
                 <ul>
-                    <li class="prev">
+                    <!-- prev button -->
+                    <li class="prev" @click="changeMusic(prevMusic, prevIdx)">
                         <i class="fa-solid fa-backward-step"></i>
                     </li>
-                    <li class="play">
+                    <li class="play" :play="playStatus">
                         <!-- 일시정지 버튼-->
                         <i
                             v-if="$store.state.play"
                             @click="stopMusic"
                             class="fa-solid fa-pause"
-                            ></i>
+                        ></i>
                         <!-- 재생 버튼 -->
                         <i
                             v-else class="fa-solid fa-play"
                             @click="startMusic"
-                            ></i>
+                        ></i>
                     </li>
-                    <li class="next">
+                    <!-- next button -->
+                    <li class="next" @click="changeMusic(nextMusic, nextIdx)">
                         <i class="fa-solid fa-forward-step"></i>
                     </li>
                 </ul>
@@ -44,8 +46,43 @@ export default {
         },
         stopMusic () {
             this.$store.commit('stopMusic')
+        },
+        changeMusic (item, index) {
+            this.$store.commit('changeMusic', { item, index })
+            this.$store.commit('startMusic')
+        }
+    },
+    computed: {
+        playStatus: function () {
+            return this.$store.state.play
+        },
+        prevMusic: function () {
+            const finalIdx = this.$store.getters.getTotalMusicCount - 1
+            return this.$store.state.currentMusicList[finalIdx]
+        },
+        nextMusic: function () {
+            return this.$store.state.currentMusicList[1]
+        },
+        prevIdx: function () {
+            let index = this.$store.state.currentIndex
+            if (index === 0) index = this.$store.getters.getTotalMusicCount - 1
+            else index--
+
+            return index
+        },
+        nextIdx: function () {
+            let index = this.$store.state.currentIndex
+            if (index === (this.$store.state.totalMusicNumber - 1)) index = 0
+            else index++
+
+            return index
         }
     }
+    // watch: {
+    //     playStatus: function () {
+    //         this.$store.commit('startMusic')
+    //     }
+    // }
 }
 </script>
 

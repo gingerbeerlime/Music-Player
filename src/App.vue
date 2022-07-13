@@ -6,7 +6,9 @@
             <player-control></player-control>
             <music-list></music-list>
             <create-playlist></create-playlist>
-            <music-control v-if="$store.state.checkedMusic.length"></music-control>
+            <transition name="pop" appear>
+                <music-control v-if="$store.state.checkedMusicList.length"></music-control>
+            </transition>
         </div>
     </div>
 </template>
@@ -20,13 +22,8 @@ import CreatePlaylist from './components/modal/CreatePlaylist.vue'
 import MusicControl from './components/modal/MusicControl.vue'
 
 export default {
-    computed: {
-        checkedMusicCount: function () {
-            return this.$store.state.checkedMusic.length
-        }
-    },
     created () {
-        this.$store.commit('setMusic')
+        this.$store.commit('setMusicList')
     },
     components: {
         ToolBar,
@@ -74,5 +71,26 @@ body {
     padding-bottom: 10px;
     box-shadow: 0 0 6px #444;
     position: relative;
+}
+/* 모달 트랜지션 */
+/* .pop-enter-active,
+.pop-leave-active {
+  transition: opacity .4s linear;
+}
+
+.pop-enter,
+.pop-leave-to {
+  opacity: 0;
+} */
+
+.pop-enter-active,
+.pop-leave-active {
+  transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
+}
+
+.pop-enter,
+.pop-leave-to {
+  opacity: 0;
+  transform: scale(0.3) translateY(-50%);
 }
 </style>

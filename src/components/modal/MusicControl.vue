@@ -13,7 +13,7 @@
 export default {
     computed: {
         checkedMusicCount: function () {
-            return this.$store.state.checkedMusic.length
+            return this.$store.state.checkedMusicList.length
         }
     }
 }
