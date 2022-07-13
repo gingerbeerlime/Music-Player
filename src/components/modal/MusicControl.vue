@@ -3,14 +3,28 @@
         <p class="selected-music-count">선택된 <span>{{ checkedMusicCount }}</span> 곡을</p>
         <ul class="btns-group">
             <li></li>
-            <li><i class="fa-solid fa-plus"></i></li>
-            <li><i class="fa-regular fa-trash-can"></i></li>
+            <!-- 플레이리스트에 추가 -->
+            <li class="btn-add">
+                <i class="fa-solid fa-plus"></i>
+            </li>
+            <!-- 노래 삭제 -->
+            <li
+                @click="showDeleteModal"
+                class="btn-delete"
+            >
+                <i class="fa-regular fa-trash-can"></i>
+            </li>
         </ul>
     </div>
 </template>
 
 <script>
 export default {
+    methods: {
+        showDeleteModal () {
+            this.$store.commit('showDeleteModal')
+        }
+    },
     computed: {
         checkedMusicCount: function () {
             return this.$store.state.checkedMusicList.length
@@ -19,7 +33,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .modal-tab1 {
     display: flex;
     width: 275px;

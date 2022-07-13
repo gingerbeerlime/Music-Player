@@ -4,14 +4,11 @@ import { musicList } from '../assets/data.js'
 
 Vue.use(Vuex)
 
-// const getPrevMusic = () => {
-
-// }
-
 export const store = new Vuex.Store({
     state: {
         rawMusicList: musicList,
         checkedMusicList: [],
+        checkedAll: false,
         playMode: 'repeat-all',
         currentMusicList: [],
         currentIndex: 0,
@@ -20,7 +17,8 @@ export const store = new Vuex.Store({
         currentTime: 0,
         playTime: 0,
         timerId: null,
-        totalMusicCount: 0
+        totalMusicCount: 0,
+        deleteModal: false
     },
     getters: {
         getCurrentMusic (state) {
@@ -46,16 +44,19 @@ export const store = new Vuex.Store({
         },
         getTotalMusicCount (state) {
             return state.totalMusicCount
+        },
+        getCheckedMusicList (state) {
+            return state.checkedMusicList
         }
     },
     mutations: {
         // 첫번째곡 세팅
         setMusicList (state) {
-            state.currentMusicList.push(...musicList)
+            state.currentMusicList.push(...state.rawMusicList)
             state.currentIndex = 0
             state.currentTime = state.currentMusicList[0].playtime
             state.playTime = state.currentMusicList[0].playtime
-            state.totalMusicCount = musicList.length
+            state.totalMusicCount = state.rawMusicList.length
         },
         // default list mutations
         toggleCheck (state, payload) {
@@ -67,6 +68,20 @@ export const store = new Vuex.Store({
                 state.checkedMusicList = newList
             } else {
                 state.checkedMusicList.push(payload.item)
+            }
+
+            if (state.checkedMusicList.length === state.totalMusicCount) {
+                state.checkedAll = true
+            } else {
+                state.checkedAll = false
+            }
+        },
+        toggleCheckAll (state) {
+            state.checkedAll = !state.checkedAll
+            if (state.checkedAll) {
+                state.checkedMusicList = state.currentMusicList
+            } else {
+                state.checkedMusicList = []
             }
         },
         changeMusic (state, payload) {
@@ -93,8 +108,6 @@ export const store = new Vuex.Store({
             state.playTime = Number(payload.item.playtime)
             // 체크된 항목 리셋
             state.checkedMusicList = []
-            // 바뀐 노래 재생
-            // this.startMusic()
         },
         selectMusic (state, payload) {
             state.selectedMusic = payload.item
@@ -138,6 +151,28 @@ export const store = new Vuex.Store({
         stopMusic (state) {
             state.play = false
             clearInterval(state.timerId)
+        },
+        showDeleteModal (state) {
+            state.deleteModal = true
+        },
+        closeDeleteModal (state) {
+            state.deleteModal = false
+        },
+        deleteMusic (state) {
+            // raw에서 삭제
+            const checkedList = state.checkedMusicList
+            let newList = state.rawMusicList
+            for (let i = 0; i < checkedList.length; i++) {
+                newList = newList.filter(item => item !== checkedList[i])
+            }
+            state.rawMusicList = newList
+            state.totalMusicCount = newList.length
+            // **currentlist에서 삭제 view에서 rawMusicList 변화 감지해서 watch로 구현가능?
+            // checkedlist 초기화
+            state.checkedMusicList = []
+            // 모달 닫기
+            state.deleteModal = false
+            // 재생중인 노래가 포함된 경우? 리스트에서 사라지나 노래는 끝까지 재생
         }
     }
 })

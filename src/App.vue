@@ -6,8 +6,11 @@
             <player-control></player-control>
             <music-list></music-list>
             <create-playlist></create-playlist>
-            <transition name="pop" appear>
+            <transition name="slide" appear>
                 <music-control v-if="$store.state.checkedMusicList.length"></music-control>
+            </transition>
+            <transition name="fade" appear>
+                <delete-modal v-if="$store.state.deleteModal"></delete-modal>
             </transition>
         </div>
     </div>
@@ -20,6 +23,7 @@ import PlayerControl from './views/PlayerControl.vue'
 import MusicList from './views/MusicList.vue'
 import CreatePlaylist from './components/modal/CreatePlaylist.vue'
 import MusicControl from './components/modal/MusicControl.vue'
+import DeleteModal from './components/modal/DeleteModal.vue'
 
 export default {
     created () {
@@ -31,7 +35,8 @@ export default {
         PlayerControl,
         MusicList,
         CreatePlaylist,
-        MusicControl
+        MusicControl,
+        DeleteModal
     }
 }
 </script>
@@ -73,24 +78,23 @@ body {
     position: relative;
 }
 /* 모달 트랜지션 */
-/* .pop-enter-active,
-.pop-leave-active {
-  transition: opacity .4s linear;
-}
-
-.pop-enter,
-.pop-leave-to {
-  opacity: 0;
-} */
-
-.pop-enter-active,
-.pop-leave-active {
+.slide-enter-active,
+.slide-leave-active {
   transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
 }
 
-.pop-enter,
-.pop-leave-to {
+.slide-enter,
+.slide-leave-to {
   opacity: 0;
-  transform: scale(0.3) translateY(-50%);
+  transform: translateY(100%);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .1s linear;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

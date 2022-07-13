@@ -16,7 +16,13 @@
             <section class="play-list-all">
                 <header class="btns-container">
                     <label class="checkbox-wrap">
-                        <input type="checkbox" class="check-btn" id="check-btn-all"/>
+                        <input
+                            @click="toggleCheckAll"
+                            :checked="$store.state.checkedAll"
+                            type="checkbox"
+                            class="check-btn"
+                            id="check-btn-all"
+                        />
                         <div class="icons-check">
                             <div class="icon-small-square"></div>
                             <i class="fa-solid fa-check"></i>
@@ -34,7 +40,12 @@
                         >
                         <!-- checkbox -->
                         <label class="checkbox-wrap">
-                            <input type="checkbox" class="check-btn" @click="toggleCheck(item)"/>
+                            <input
+                                @click="toggleCheck(item)"
+                                type="checkbox"
+                                class="check-btn"
+                                :checked="checkedMusicList.includes(item)"
+                            />
                             <div class="icons-check">
                                 <div class="icon-small-square"></div>
                                 <i class="fa-solid fa-check"></i>
@@ -106,12 +117,20 @@ export default {
         toggleCheck (item) {
             this.$store.commit('toggleCheck', { item })
         },
+        toggleCheckAll () {
+            this.$store.commit('toggleCheckAll')
+        },
         changeMusic (item, index) {
             this.$store.commit('changeMusic', { item, index })
             this.$store.commit('startMusic')
         },
         selectMusic (item) {
             this.$store.commit('selectMusic', { item })
+        }
+    },
+    computed: {
+        checkedMusicList: function () {
+            return this.$store.getters.getCheckedMusicList
         }
     },
     components: {
