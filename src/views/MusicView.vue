@@ -3,13 +3,13 @@
         <!-- 앨범사진 -->
         <div class="album-bg" >
             <div class="album-photo">
-                <img :src="require(`@/assets/img/thumb/${imgUrl}.jpg`)" alt="album-photo" />
+                <img :src="require('@/assets/img/thumb/' + currentMusicInfo.imgUrl + '.jpg')" alt="album-photo" />
             </div>
         </div>
         <!-- 노래 제목 & 가수 -->
         <div class="music-info">
-            <h2 class="music-title">{{ $store.getters.getCurrentMusic.title }}</h2>
-            <p class="artist-name">{{ $store.getters.getCurrentMusic.artist }}</p>
+            <h2 class="music-title">{{ currentMusicInfo.title }}</h2>
+            <p class="artist-name">{{ currentMusicInfo.artist }}</p>
         </div>
         <!-- 좋아요 버튼 -->
         <div class="like-btn">
@@ -22,7 +22,28 @@
 export default {
     computed: {
         imgUrl: function () {
-            return this.$store.getters.getCurrentMusic.photo
+            let imgUrl
+            if (this.$store.getters.getCurrentMusic) {
+                imgUrl = this.$store.getters.getCurrentMusic.photo
+            } else {
+                imgUrl = 'default_image'
+            }
+            return imgUrl
+        },
+        currentMusicInfo () {
+            let imgUrl, title, artist
+            if (this.$store.getters.getCurrentMusic === '') {
+                imgUrl = 'default_image'
+                title = ''
+                artist = ''
+            } else {
+                const music = this.$store.getters.getCurrentMusic
+                console.log(music)
+                imgUrl = music.photo
+                title = music.title
+                artist = music.artist
+            }
+            return { imgUrl, title, artist }
         }
     }
 }

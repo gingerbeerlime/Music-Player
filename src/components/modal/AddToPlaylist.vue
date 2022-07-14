@@ -40,7 +40,7 @@ export default {
         playlistNames: function () {
             const playlists = this.$store.getters.getMyPlaylists
             const namesArray = []
-            playlists.forEach(item => namesArray.push(...item[0]))
+            playlists.forEach(item => namesArray.push(item.name))
             return namesArray
         }
     }

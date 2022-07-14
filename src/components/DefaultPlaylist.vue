@@ -16,6 +16,15 @@
             </label>
             <p class="music-count">전체선택</p>
         </header>
+        <!-- 음악이 없을 때 -->
+        <p
+            v-if="$store.state.totalMusicCount === 0"
+            class="no-list-message"
+        >
+            <i class="fa-solid fa-music"></i>
+            리스트가 비어있습니다.
+        </p>
+        <!-- 음악목록 -->
         <ul class="list-box">
             <li
                 v-for="(item, index) in $store.state.rawMusicList"
@@ -94,6 +103,18 @@ export default {
     font-weight: bolder;
     line-height: 37px;
     color: var(--font-gray);
+}
+/* no-list message */
+.no-list-message {
+    color: var(--font-gray);
+    text-align: center;
+    font-size: 14px;
+    line-height: 70px;
+}
+.fa-music {
+    color: var(--font-gray);
+    font-size: 12px;
+    padding-right: 5px;
 }
 /* listbox */
 .play-list-all .list-box {

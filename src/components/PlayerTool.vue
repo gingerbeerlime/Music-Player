@@ -10,7 +10,7 @@
                     <li class="prev" @click="changeMusic(prevMusic, prevIdx)">
                         <i class="fa-solid fa-backward-step"></i>
                     </li>
-                    <li class="play" :play="playStatus">
+                    <li class="play">
                         <!-- 일시정지 버튼-->
                         <i
                             v-if="$store.state.play"
@@ -58,7 +58,7 @@ export default {
             return this.$store.state.play
         },
         prevMusic: function () {
-            const finalIdx = this.$store.getters.getTotalMusicCount - 1
+            const finalIdx = this.$store.getters.getCurrentMusicCount - 1
             return this.$store.state.currentMusicList[finalIdx]
         },
         nextMusic: function () {
@@ -66,24 +66,19 @@ export default {
         },
         prevIdx: function () {
             let index = this.$store.state.currentIndex
-            if (index === 0) index = this.$store.getters.getTotalMusicCount - 1
+            if (index === 0) index = this.$store.getters.getCurrentMusicCount - 1
             else index--
 
             return index
         },
         nextIdx: function () {
             let index = this.$store.state.currentIndex
-            if (index === (this.$store.state.totalMusicNumber - 1)) index = 0
+            if (index === (this.$store.getters.getCurrentMusicCount - 1)) index = 0
             else index++
 
             return index
         }
     }
-    // watch: {
-    //     playStatus: function () {
-    //         this.$store.commit('startMusic')
-    //     }
-    // }
 }
 </script>
 

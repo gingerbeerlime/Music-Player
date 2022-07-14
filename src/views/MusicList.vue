@@ -2,11 +2,11 @@
     <div id="tab-box">
             <!-- [1] tab buttons -->
             <div class="tab-btns-bg"></div>
-            <input type="radio" name="playlist" id="tab1" checked @click="tabChange($event)">
+            <input type="radio" name="playlist" id="tab1" checked @click="changeTab($event)">
             <label for="tab1" class="tab-btn btn-list-all">
                 <p>곡<span>{{ $store.getters.getTotalMusicCount }}</span></p>
             </label>
-            <input type="radio" name="playlist" id="tab2" @click="tabChange($event)">
+            <input type="radio" name="playlist" id="tab2" @click="changeTab($event)">
             <label for="tab2" class="tab-btn btn-list-created">
                 <p>플레이리스트</p>
             </label>
@@ -24,9 +24,9 @@ import CreatedPlaylist from '../components/CreatedPlaylist.vue'
 
 export default {
     methods: {
-        tabChange (event) {
+        changeTab (event) {
             const tabId = event.target.getAttribute('id')
-            this.$store.commit('tabChange', { tabId })
+            this.$store.commit('changeTab', { tabId })
         }
     },
     components: {

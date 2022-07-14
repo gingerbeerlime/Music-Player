@@ -10,18 +10,16 @@
                     새 플레이리스트 만들기
                 </p>
             </header>
+            <!-- no-list-message -->
+            <p
+                v-if="!$store.state.myPlaylists.length"
+                class="no-playlist-message"
+            >
+                <i class="fa-solid fa-headphones-simple"></i>
+                플레이리스트를 생성해주세요.
+            </p>
+            <!-- list -->
             <ul class="list-box">
-                <!-- markup(temp) -->
-                <li>
-                    <div class="thumb-img">
-                        <img src="../assets/img/thumb/default_image.jpg" alt="playlist_thumbnail">
-                    </div>
-                    <p class="playlist-name">요즘 많이 듣는 곡</p>
-                    <span class="music-count">10</span>
-                    <div class="go-playlist">
-                        <i class="fa-solid fa-play"></i>
-                    </div>
-                </li>
                 <li
                     v-for="playlist in myPlaylistsInfo"
                     :key="playlist.playlistName"
@@ -59,8 +57,8 @@
                 </p>
                 <!-- 다른 부분1 -->
                 <p class="return" @click="returnToPlaylist">
-                    <i class="fa-solid fa-bars"></i>
                     플레이리스트 보기
+                    <i class="fa-solid fa-bars"></i>
                 </p>
                 <!-- 다른 부분1 -->
             </header>
@@ -72,19 +70,19 @@
                     @click="selectMusic(item)"
                     :class="{'_click': $store.state.selectedMusic === item, 'playing-now': $store.getters.getCurrentMusic === item}"
                 >
-                <!-- checkbox -->
-                <label class="checkbox-wrap">
-                    <input
-                        @click="toggleCheck(item)"
-                        type="checkbox"
-                        class="check-btn"
-                        :checked="checkedMusicList.includes(item)"
-                    />
-                    <div class="icons-check">
-                        <div class="icon-small-square"></div>
-                        <i class="fa-solid fa-check"></i>
-                    </div>
-                </label>
+                    <!-- checkbox -->
+                    <label class="checkbox-wrap">
+                        <input
+                            @click="toggleCheck(item)"
+                            type="checkbox"
+                            class="check-btn"
+                            :checked="checkedMusicList.includes(item)"
+                        />
+                        <div class="icons-check">
+                            <div class="icon-small-square"></div>
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </label>
                     <!-- music title -->
                     <p class="title">
                         <audio-visual-icon
@@ -107,12 +105,16 @@ export default {
     methods: {
         toggleCheck (item) {
             this.$store.commit('toggleCheck', { item })
-            // this.$emit('toggle', { item })
         },
         toggleCheckAll () {
             this.$store.commit('toggleCheckAll')
         },
         changeMusic (item, index) {
+            // 재생리스트가 바꼈는지 확인(default or playlists)
+            if (this.$store.state.playingPosition !== this.$store.state.currentPosition) {
+                // default > playlist 이동시에만 적용됨
+                this.$store.commit('resetCurrentPlaylist', { index })
+            }
             this.$store.commit('changeMusic', { item, index })
             this.$store.commit('startMusic')
         },
@@ -140,10 +142,11 @@ export default {
         myPlaylistsInfo: function () {
             const infoBox = []
             for (let i = 0; i < this.myPlaylists.length; i++) {
-                const list = this.myPlaylists[i]
-                const name = list[0][0]
-                const count = list[1].length
-                const thumbnail = list[2]
+                const playlist = this.myPlaylists[i]
+                console.log(playlist)
+                const name = playlist.name
+                const count = playlist.list.length
+                const thumbnail = playlist.thumbnail
                 const info = { playlistName: name, totalMusicCount: count, imgUrl: thumbnail }
                 infoBox.push(info)
             }
@@ -160,8 +163,8 @@ export default {
             const allPlaylists = this.$store.state.myPlaylists
             let currentPlaylist
             for (let i = 0; i < allPlaylists.length; i++) {
-                if (allPlaylists[i][0][0] === playlistName) {
-                    currentPlaylist = allPlaylists[i][1]
+                if (allPlaylists[i].name === playlistName) {
+                    currentPlaylist = allPlaylists[i].list
                     break
                 }
             }
@@ -198,6 +201,18 @@ export default {
     transition: 0.1s all ease;
 }
 .fa-circle-plus {
+    padding-right: 5px;
+}
+/* no-list message */
+.no-playlist-message {
+    color: var(--font-gray);
+    text-align: center;
+    font-size: 14px;
+    line-height: 70px;
+}
+.fa-headphones-simple {
+    color: var(--font-gray);
+    font-size: 12px;
     padding-right: 5px;
 }
 /* listbox */
@@ -297,7 +312,7 @@ export default {
     color: var(--font-gray);
     cursor: pointer;
     margin-left: auto;
-    margin-right: 30px;
+    margin-right: 15px;
 }
 .playlist-play .return:hover {
     color: var(--font-point-white);

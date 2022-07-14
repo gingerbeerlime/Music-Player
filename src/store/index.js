@@ -23,14 +23,14 @@ export const store = new Vuex.Store({
         addModal: false,
         alertModal: false,
         myPlaylists: [],
-        myPlaylistKey: 1,
         viewPlaylist: '',
-        currentTab: 'tab1'
+        playingPosition: 'default',
+        currentPosition: 'tab1'
     },
     getters: {
         getCurrentMusic (state) {
             const playlist = state.currentMusicList
-            const currentMusic = playlist[0]
+            const currentMusic = playlist[0] ?? ''
             return currentMusic
         },
         getCurrentTime (state) {
@@ -61,6 +61,9 @@ export const store = new Vuex.Store({
         getDefaultPlaylistName (state) {
             const playlistsCount = state.myPlaylists.length + 1
             return `플레이리스트 ${playlistsCount}`
+        },
+        getCurrentMusicCount (state) {
+            return state.currentMusicList.length
         }
     },
     mutations: {
@@ -99,7 +102,7 @@ export const store = new Vuex.Store({
             }
         },
         changeMusic (state, payload) {
-            console.log(payload.item)
+            // prev, next 찍어보기
             // 재생중이던 노래 중지
             if (state.play) {
                 state.play = false
@@ -122,6 +125,7 @@ export const store = new Vuex.Store({
             state.playTime = Number(payload.item.playtime)
             // 체크된 항목 리셋
             state.checkedMusicList = []
+            state.checkedAll = false
         },
         selectMusic (state, payload) {
             state.selectedMusic = payload.item
@@ -135,7 +139,7 @@ export const store = new Vuex.Store({
                 const nextMusic = state.currentMusicList[0]
                 state.currentTime = nextMusic.playtime
                 state.playTime = nextMusic.playtime
-                if (state.currentIndex === (state.totalMusicCount - 1)) {
+                if (state.currentIndex === (state.currentMusicList.length - 1)) {
                     state.currentIndex = 0
                 } else {
                     state.currentIndex++
@@ -201,13 +205,19 @@ export const store = new Vuex.Store({
                     clearInterval(state.timerId)
                     state.play = false
                 }
-                state.currentTime = state.currentMusicList[0].playtime
-                state.playTime = state.currentMusicList[0].playtime
+                if (state.totalMusicCount) {
+                    state.currentTime = state.currentMusicList[0].playtime
+                    state.playTime = state.currentMusicList[0].playtime
+                } else {
+                    state.currentTime = 0
+                    state.playTime = 0
+                }
             }
             // currentIndex 삭제되는 첫번째 아이템의 인덱스로 변경
             state.currentIndex = state.rawMusicList.indexOf(state.currentMusicList[0])
             // checkedlist 초기화
             state.checkedMusicList = []
+            state.checkedAll = false
             // 모달 닫기
             state.deleteModal = false
             // 재생중인 노래가 포함된 경우? 리스트에서 사라지나 노래는 끝까지 재생
@@ -221,9 +231,11 @@ export const store = new Vuex.Store({
         },
         // 플레이리스트 폴더 생성
         makePlaylist (state, payload) {
-            const musicList = []
-            const thumbnail = ['default_image']
-            const newList = [[payload.playlistName], musicList, thumbnail]
+            const newList = {
+                name: payload.playlistName,
+                list: [],
+                thumbnail: 'default_image'
+            }
             state.myPlaylists.push(newList)
             // 선택한 노래가 있는 경우 / 폴더만 생성하는 경우
             if (state.checkedMusicList.length === 0) {
@@ -238,23 +250,19 @@ export const store = new Vuex.Store({
         },
         // 플레이리스트에 노래 추가
         addMusicToPlaylist (state, payload) {
-            console.log('working')
             // 체크된 노래 리스트에 추가
             const addMusicList = state.checkedMusicList
             const myPlaylists = state.myPlaylists
 
             for (let i = 0; i < myPlaylists.length; i++) {
-                const playlistName = myPlaylists[i][0][0]
+                const playlistName = myPlaylists[i].name
                 if (playlistName !== payload.name) continue
-                const playlist = myPlaylists[i][1]
-                // 중복 제거
+                const playlist = myPlaylists[i].list
+                // 노래 중복 제거
                 const addUniqueMusicList = addMusicList.filter(item => !playlist.includes(item))
                 playlist.push(...addUniqueMusicList)
-                // thumbnail변경(첫번째곡 사진)
-                console.log(playlist[0].photo)
-                const thumbnail = myPlaylists[i][2]
-                thumbnail.pop()
-                thumbnail.push(playlist[0].photo)
+                // 썸네일 변경-첫번째곡 사진
+                myPlaylists[i].thumbnail = playlist[0].photo
                 break
             }
 
@@ -264,6 +272,7 @@ export const store = new Vuex.Store({
                 state.checkedAll = false
             }
             state.checkedMusicList = []
+
             // alert 띄우기
             setTimeout(function () {
                 state.alertModal = true
@@ -273,17 +282,39 @@ export const store = new Vuex.Store({
             }, 300)
         },
         showPlaylist (state, payload) {
-            console.log(payload.name)
             state.viewPlaylist = payload.name
+            state.currentPosition = payload.name
         },
         returnToPlaylist (state) {
             state.viewPlaylist = ''
+            state.checkedMusicList = []
+            state.checkedAll = false
+            state.currentPosition = 'tab2'
         },
-        tabChange (state, payload) {
-            if (state.currentTab !== payload.tabId) {
+        changeTab (state, payload) {
+            if (state.currentPosition !== payload.tabId) {
                 state.checkedMusicList = []
+                state.checkedAll = false
             }
-            state.currentTab = payload.tabId
+            state.currentPosition = payload.tabId
+            state.viewPlaylist = ''
+        },
+        // 재생리스트 리셋
+        resetCurrentPlaylist (state, payload) {
+            const currentPlaylist = state.currentPosition
+            // const newPlaylist = state.myPlaylists.filter(item => item.name === currentPlaylist)[0].list
+            // console.log(payload.index)
+            // const movingItems = newPlaylist.splice(0, payload.index)
+            // newPlaylist.push(...movingItems)
+            const newPlaylist = state.myPlaylists.find(item => item.name === currentPlaylist)
+            console.log(newPlaylist.list)
+            state.currentMusicList = []
+            state.currentMusicList.push(...newPlaylist.list)
+            // newPlaylist = ...newPlaylist
+            // newPlaylist = newPlaylist.list
+            // console.log(`newPlaylist: ${newPlaylist}`)
+            // state.currentMusicList = newPlaylist
+            state.currentIndex = 0
         }
     }
 })

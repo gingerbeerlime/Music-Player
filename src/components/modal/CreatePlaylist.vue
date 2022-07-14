@@ -37,12 +37,6 @@ export default {
             }
         }
     }
-    // computed: {
-    //     playlistName: function () {
-    //         const playlistsCount = this.$store.getters.getMyPlaylists.length + 1
-    //         return `플레이리스트 ${playlistsCount}`
-    //     }
-    // }
 }
 </script>
 
