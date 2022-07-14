@@ -19,7 +19,8 @@
                         ></i>
                         <!-- 재생 버튼 -->
                         <i
-                            v-else class="fa-solid fa-play"
+                            v-else
+                            class="fa-solid fa-play"
                             @click="startMusic"
                         ></i>
                     </li>

@@ -61,5 +61,12 @@ export const musicList = [
         artist: '백예린 (Yerin Baek)',
         playtime: '55',
         photo: 'that_was_me_baekyerin'
+    },
+    {
+        key: 10,
+        title: 'POP!',
+        artist: '나연 (TWICE)',
+        playtime: 12,
+        photo: 'pop_nayeon'
     }
 ]

@@ -4,7 +4,10 @@
         <ul class="btns-group">
             <li></li>
             <!-- 플레이리스트에 추가 -->
-            <li class="btn-add">
+            <li
+                @click="showAddModal"
+                class="btn-add"
+            >
                 <i class="fa-solid fa-plus"></i>
             </li>
             <!-- 노래 삭제 -->
@@ -23,6 +26,9 @@ export default {
     methods: {
         showDeleteModal () {
             this.$store.commit('showDeleteModal')
+        },
+        showAddModal () {
+            this.$store.commit('showAddModal')
         }
     },
     computed: {
@@ -42,7 +48,7 @@ export default {
     position: absolute;
     bottom: 8px;
     left: 15px;
-    z-index: 950;
+    z-index: 700;
     border-radius: 10px;
 }
 .selected-music-count {

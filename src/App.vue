@@ -5,12 +5,18 @@
             <music-view></music-view>
             <player-control></player-control>
             <music-list></music-list>
-            <create-playlist></create-playlist>
             <transition name="slide" appear>
                 <music-control v-if="$store.state.checkedMusicList.length"></music-control>
             </transition>
             <transition name="fade" appear>
                 <delete-modal v-if="$store.state.deleteModal"></delete-modal>
+            </transition>
+            <create-playlist v-if="$store.state.createModal"></create-playlist>
+            <transition name="slide2" appear>
+                <add-to-playlist v-if="$store.state.addModal"></add-to-playlist>
+            </transition>
+            <transition name="fade" appear>
+                <add-alert v-if="$store.state.alertModal"></add-alert>
             </transition>
         </div>
     </div>
@@ -24,6 +30,8 @@ import MusicList from './views/MusicList.vue'
 import CreatePlaylist from './components/modal/CreatePlaylist.vue'
 import MusicControl from './components/modal/MusicControl.vue'
 import DeleteModal from './components/modal/DeleteModal.vue'
+import AddToPlaylist from './components/modal/AddToPlaylist.vue'
+import AddAlert from './components/modal/AddAlert.vue'
 
 export default {
     created () {
@@ -34,9 +42,11 @@ export default {
         MusicView,
         PlayerControl,
         MusicList,
-        CreatePlaylist,
         MusicControl,
-        DeleteModal
+        DeleteModal,
+        CreatePlaylist,
+        AddToPlaylist,
+        AddAlert
     }
 }
 </script>
@@ -67,6 +77,13 @@ body {
     justify-content: center;
     align-items: center;
 }
+#wrap p {
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
 /* [player contianer] */
 #player {
     width: 305px;
@@ -80,7 +97,7 @@ body {
 /* 모달 트랜지션 */
 .slide-enter-active,
 .slide-leave-active {
-  transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
+  transition: transform 0.3s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
 }
 
 .slide-enter,
@@ -88,7 +105,17 @@ body {
   opacity: 0;
   transform: translateY(100%);
 }
+/* slide slow version */
+.slide2-enter-active,
+.slide2-leave-active {
+  transition: transform 1s cubic-bezier(0.8, 0, 0.5, 1), opacity 0.4s linear;
+}
 
+.slide2-enter,
+.slide2-leave-to {
+  opacity: 0;
+  transform: translateY(100%);
+}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity .1s linear;

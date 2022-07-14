@@ -2,144 +2,41 @@
     <div id="tab-box">
             <!-- [1] tab buttons -->
             <div class="tab-btns-bg"></div>
-            <input type="radio" name="playlist" id="tab1" checked>
+            <input type="radio" name="playlist" id="tab1" checked @click="tabChange($event)">
             <label for="tab1" class="tab-btn btn-list-all">
                 <p>곡<span>{{ $store.getters.getTotalMusicCount }}</span></p>
             </label>
-            <input type="radio" name="playlist" id="tab2">
+            <input type="radio" name="playlist" id="tab2" @click="tabChange($event)">
             <label for="tab2" class="tab-btn btn-list-created">
                 <p>플레이리스트</p>
             </label>
 
             <!-- [2] playing list -->
             <!-- [2-1] 전체 음악 리스트 -->
-            <section class="play-list-all">
-                <header class="btns-container">
-                    <label class="checkbox-wrap">
-                        <input
-                            @click="toggleCheckAll"
-                            :checked="$store.state.checkedAll"
-                            type="checkbox"
-                            class="check-btn"
-                            id="check-btn-all"
-                        />
-                        <div class="icons-check">
-                            <div class="icon-small-square"></div>
-                            <i class="fa-solid fa-check"></i>
-                        </div>
-                    </label>
-                    <p class="music-count">전체선택</p>
-                </header>
-                <ul class="list-box">
-                    <li
-                        v-for="(item, index) in $store.state.rawMusicList"
-                        :key="item.key"
-                        @dblclick="changeMusic(item, index)"
-                        @click="selectMusic(item)"
-                        :class="{'_click': $store.state.selectedMusic === item, 'playing-now': $store.getters.getCurrentMusic === item}"
-                        >
-                        <!-- checkbox -->
-                        <label class="checkbox-wrap">
-                            <input
-                                @click="toggleCheck(item)"
-                                type="checkbox"
-                                class="check-btn"
-                                :checked="checkedMusicList.includes(item)"
-                            />
-                            <div class="icons-check">
-                                <div class="icon-small-square"></div>
-                                <i class="fa-solid fa-check"></i>
-                            </div>
-                        </label>
-                        <!-- music title -->
-                        <p class="title">
-                            <audio-visual-icon
-                                v-if="$store.state.play && $store.getters.getCurrentMusic === item"
-                            ></audio-visual-icon>
-                            {{ item.title }}
-                        </p>
-                        <!-- artist -->
-                        <p class="artist">{{ item.artist }}</p>
-                    </li>
-                </ul>
-            </section>
-            <!-- [2-2] 생성한 플레이리스트 -->
-            <section class="play-list-created">
-                <header>
-                    <p class="btn-create"><i class="fa-solid fa-circle-plus"></i>새 플레이리스트 만들기</p>
-                </header>
-                <ul class="list-box">
-                    <li>
-                        <div class="thumb-img">
-                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
-                        </div>
-                        <p class="playlist-name">요즘 많이 듣는 곡</p>
-                        <span class="music-count">10</span>
-                    </li>
-                    <li>
-                        <div class="thumb-img">
-                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
-                        </div>
-                        <p class="playlist-name">요즘 많이 듣는 곡</p>
-                        <span class="music-count">10</span>
-                    </li>
-                    <li>
-                        <div class="thumb-img">
-                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
-                        </div>
-                        <p class="playlist-name">요즘 많이 듣는 곡</p>
-                        <span class="music-count">10</span>
-                    </li>
-                    <li>
-                        <div class="thumb-img">
-                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
-                        </div>
-                        <p class="playlist-name">요즘 많이 듣는 곡</p>
-                        <span class="music-count">10</span>
-                    </li>
-                    <li>
-                        <div class="thumb-img">
-                            <img src="../assets/img/thumb/pop_nayeon.jpg" alt="playlist_thumbnail">
-                        </div>
-                        <p class="playlist-name">비오는 날 듣기 좋은 명곡들 플레이리스트</p>
-                        <span class="music-count">3</span>
-                    </li>
-                </ul>
-            </section>
+            <default-playlist class="play-list-all"></default-playlist>
+            <created-playlist class="play-list-created"></created-playlist>
         </div>
 </template>
 
 <script>
-import AudioVisualIcon from '../components/icon/AudioVisualIcon.vue'
+import DefaultPlaylist from '../components/DefaultPlaylist.vue'
+import CreatedPlaylist from '../components/CreatedPlaylist.vue'
 
 export default {
     methods: {
-        toggleCheck (item) {
-            this.$store.commit('toggleCheck', { item })
-        },
-        toggleCheckAll () {
-            this.$store.commit('toggleCheckAll')
-        },
-        changeMusic (item, index) {
-            this.$store.commit('changeMusic', { item, index })
-            this.$store.commit('startMusic')
-        },
-        selectMusic (item) {
-            this.$store.commit('selectMusic', { item })
-        }
-    },
-    computed: {
-        checkedMusicList: function () {
-            return this.$store.getters.getCheckedMusicList
+        tabChange (event) {
+            const tabId = event.target.getAttribute('id')
+            this.$store.commit('tabChange', { tabId })
         }
     },
     components: {
-        AudioVisualIcon
+        DefaultPlaylist,
+        CreatedPlaylist
     }
 }
 </script>
 
-<style scoped>
+<style>
 #tab-box {
     width: 100%;
     /* 60(button) & 288(list) */
@@ -196,7 +93,8 @@ input[type="radio"] {
     color: var(--font-point-white);
 }
 /* [2] section: play list */
-#tab-box > section {
+#tab-box > .play-list-all,
+#tab-box > .play-list-created {
     width: 100%;
     height: 287px;
     position: absolute;
@@ -206,7 +104,7 @@ input[type="radio"] {
 }
 .play-list-all {
     display: none;
-    z-index: 900;
+    z-index: 500;
 }
 /* tab2) 생성한 플레이리스트 섹션 */
 .play-list-created {
@@ -219,168 +117,5 @@ input[type="radio"] {
 }
 #tab2:checked ~ .play-list-created {
     display: block;
-}
-/* [2-1] tab1) 전체 음악 리스트 */
-/* header */
-.play-list-all .btns-container {
-    width: 100%;
-    height: 37px;
-    display: flex;
-    align-items: center;
-}
-.play-list-all .music-count {
-    font-size: 10.5px;
-    font-weight: bolder;
-    line-height: 37px;
-    color: var(--font-gray);
-}
-/* listbox */
-.play-list-all .list-box {
-    width: 100%;
-    height: 247px;
-    padding-bottom: 40px;
-    overflow: scroll;
-}
-.play-list-all .list-box > li {
-    width: 100%;
-    height: 37px;
-    display: flex;
-    align-items: center;
-}
-/* checkbox */
-input[type="checkbox"] {
-    display: none;
-}
-.checkbox-wrap {
-    display: block;
-    margin: 0 10px 0 13px;
-    position: relative;
-    width: 13px;
-    height: 13px;
-    border: 2px solid #b9b9b96c;
-    box-sizing: border-box;
-    border-radius: 2px;
-    cursor: pointer;
-}
-.checkbox-wrap .icons-check {
-    display: none;
-}
-.checkbox-wrap .icon-small-square {
-    width: 6px;
-    height: 8px;
-    background-color: var(--bg-black);
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    z-index: 700;
-}
-.checkbox-wrap .fa-check {
-    color: var(--point-green);
-    font-size: 8px;
-    position: absolute;
-    top: -1.2px;
-    right: -0.5px;
-    z-index: 750;
-}
-.check-btn:checked + .icons-check {
-    display: block;
-}
-/* music title */
-.play-list-all .list-box p {
-    color: var(--font-gray);
-    font-size: 13px;
-    line-height: 37px;
-}
-.play-list-all .list-box .title {
-    display: flex;
-    align-items: center;
-    width: 150px;
-    max-width: 160px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.play-list-all .list-box .artist {
-    width: 62px;
-    max-width: 62px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-left: 30px;
-}
-/* 재생중 리스트 효과 */
-.play-list-all .list-box li.playing-now > p {
-    color: var(--point-green);
-}
-/* [2-2] tab2) 생성한 음악 리스트 */
-/* header */
-.play-list-created > header {
-    width: 100%;
-    height: 37px;
-}
-.play-list-created > header .btn-create {
-    font-size: 12px;
-    color: var(--font-gray);
-    line-height: 37px;
-    padding-left: 15px;
-    cursor: pointer;
-}
-.fa-circle-plus {
-    padding-right: 5px;
-}
-/* listbox */
-.play-list-created .list-box {
-    width: 100%;
-    height: 100%;
-    overflow: scroll;
-}
-.play-list-created .list-box li {
-    width: 100%;
-    height: 55px;
-    display: flex;
-    align-items: center;
-    padding-left: 15px;
-    cursor: pointer;
-}
-.play-list-created .list-box li:hover {
-    background-color: var(--selected-bg-gray-opacity);
-    transition: 0.02s all ease;
-}
-.play-list-created .list-box li:last-child {
-    margin-bottom: 25px;
-}
-.play-list-created .thumb-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 5px;
-    overflow: hidden;
-}
-.play-list-created .thumb-img > img {
-    width: 100%;
-}
-.play-list-created .playlist-name {
-    color: var(--font-gray);
-    font-size: 13px;
-    line-height: 40px;
-    padding-left: 10px;
-    max-width: 170px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-.play-list-created .music-count {
-    color: var(--font-gray);
-    font-size: 11px;
-    padding: 2px 6px;
-    border: 1px solid var(--font-gray);
-    border-radius: 10px;
-    margin-left: 5px;
-}
-/* 선택 효과 */
-.list-box ._click {
-    background-color: var( --selected-bg-gray-opacity);
-}
-.list-box ._click .icon-small-square {
-    background-color: rgba(51, 51, 51);
 }
 </style>

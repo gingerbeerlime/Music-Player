@@ -1,38 +1,60 @@
 <template>
     <div class="modal-tab2 modal-layer">
-        <div class="modal-box">
-            <header>
-                <h2>새 플레이리스트 만들기</h2>
-            </header>
-            <div class="input-box">
-                <input type="text" class="input_playlist_name" placeholder="플레이리스트 1">
-                <i class="fa-solid fa-xmark"></i>
-                <p class="char_num"><span>16</span>/40</p>
+        <transition name="slide" appear>
+            <div class="modal-box">
+                <header>
+                    <h2>새 플레이리스트 만들기</h2>
+                </header>
+                <div class="input-box">
+                    <input type="text" class="input_playlist_name" v-model="playlistName">
+                    <i class="fa-solid fa-xmark"></i>
+                    <p class="char_num"><span>16</span>/40</p>
+                </div>
+                <ul class="btns-group">
+                    <li @click="makePlaylist(playlistName)">확인</li>
+                    <li @click="closeCreateModal">취소</li>
+                </ul>
             </div>
-            <ul class="btns-group">
-                <li>확인</li>
-                <li>취소</li>
-            </ul>
-        </div>
+        </transition>
     </div>
 </template>
 
 <script>
 export default {
-
+    data () {
+        return {
+            playlistName: this.$store.getters.getDefaultPlaylistName
+        }
+    },
+    methods: {
+        closeCreateModal () {
+            this.$store.commit('closeCreateModal')
+        },
+        makePlaylist (playlistName) {
+            this.$store.commit('makePlaylist', { playlistName })
+            if (this.$store.state.checkedMusicList.length >= 1) {
+                this.$store.commit('addMusicToPlaylist', { name: playlistName })
+            }
+        }
+    }
+    // computed: {
+    //     playlistName: function () {
+    //         const playlistsCount = this.$store.getters.getMyPlaylists.length + 1
+    //         return `플레이리스트 ${playlistsCount}`
+    //     }
+    // }
 }
 </script>
 
 <style scoped>
 .modal-tab2 {
-    display: none;
     width: 100%;
     height: 100%;
     background-color: rgb(0, 0, 0, 0.5);
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 960;
+    z-index: 880;
 }
 .modal-tab2 .modal-box {
     display: flex;
@@ -42,7 +64,7 @@ export default {
     position: absolute;
     bottom: 12px;
     left: 15px;
-    z-index: 970;
+    z-index: 890;
     border-radius: 10px;
     flex-direction: column;
     align-items: center;
@@ -133,5 +155,16 @@ export default {
     border: 1px solid var(--font-point-white);
     color: var(--font-point-white);
     transition: 0.02s all ease;
+}
+/* 모달 트랜지션 */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
+}
+
+.slide-enter,
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(100%);
 }
 </style>

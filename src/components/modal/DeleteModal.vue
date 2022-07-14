@@ -38,7 +38,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 980;
+    z-index: 800;
 }
 .modal-tab3 .modal-box {
     display: flex;
@@ -49,7 +49,7 @@ export default {
     top: 50%;
     left: 50%;
     margin: -60px 0 0 -137.5px;
-    z-index: 970;
+    z-index: 810;
     border-radius: 10px;
     flex-direction: column;
     align-items: center;
