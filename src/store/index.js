@@ -173,43 +173,65 @@ export const store = new Vuex.Store({
             // 삭제 리스트
             const checkedList = state.checkedMusicList
 
-            // 삭제 리스트에 현재 재생중/일시정지 노래가 포함되어있을 때
-            const currentMusic = state.currentPlayOrder[0]
-            const except = checkedList.includes(currentMusic)
+            if (state.currentPosition === state.playingPosition) {
+                // 추가) currentPosition이 playlist일 때
+                // 삭제 리스트에 현재 재생중/일시정지 노래가 포함되어있을 때
+                const currentMusic = state.currentPlayOrder[0]
+                const except = checkedList.includes(currentMusic)
 
-            let newList = state.fetchedMusicList
-            for (let i = 0; i < checkedList.length; i++) {
-                newList = newList.filter(item => item !== checkedList[i])
-            }
-            state.fetchedMusicList = newList
-            state.totalMusicCount = newList.length
-
-            // 현재 playlist 갱신
-            let newPlaylist = state.currentPlayOrder
-            for (let i = 0; i < checkedList.length; i++) {
-                newPlaylist = newPlaylist.filter(item => item !== checkedList[i])
-            }
-            state.currentPlayOrder = newPlaylist
-
-            // 예외처리
-            if (except) {
-                if (state.playStatus) {
-                    clearInterval(state.timerId)
-                    state.playStatus = false
+                let newList = state.fetchedMusicList
+                for (let i = 0; i < checkedList.length; i++) {
+                    newList = newList.filter(item => item !== checkedList[i])
                 }
-                if (state.totalMusicCount) {
-                    state.currentTime = state.currentPlayOrder[0].playtime
-                    state.playTime = state.currentPlayOrder[0].playtime
+                state.fetchedMusicList = newList
+                state.totalMusicCount = newList.length
+
+                // 현재 playlist 갱신
+                let newPlaylist = state.currentPlayOrder
+                for (let i = 0; i < checkedList.length; i++) {
+                    newPlaylist = newPlaylist.filter(item => item !== checkedList[i])
+                }
+                state.currentPlayOrder = newPlaylist
+
+                // 예외처리
+                if (except) {
+                    if (state.playStatus) {
+                        clearInterval(state.timerId)
+                        state.playStatus = false
+                    }
+                    if (state.totalMusicCount) {
+                        state.currentTime = state.currentPlayOrder[0].playtime
+                        state.playTime = state.currentPlayOrder[0].playtime
+                    } else {
+                        state.currentTime = 0
+                        state.playTime = 0
+                    }
+                }
+                state.currentMusicIndex = state.fetchedMusicList.indexOf(state.currentPlayOrder[0])
+
+                state.checkedMusicList = []
+                state.checkedAll = false
+                state.deleteModal = false
+            } else {
+                if (state.currentPosition === 'tab1') {
+                    // default 삭제의 경우
+                    let originalList = state.fetchedMusicList
+                    for (let i = 0; i < checkedList.length; i++) {
+                        originalList = originalList.filter(item => item !== checkedList[i])
+                    }
                 } else {
-                    state.currentTime = 0
-                    state.playTime = 0
+                    // playlist 삭제의 경우
+                    const playlistName = state.currentPosition
+                    const targetPlaylist = state.myPlaylists.find(item => item.name === playlistName)
+                    for (let i = 0; i < checkedList.length; i++) {
+                        targetPlaylist.list = targetPlaylist.list.filter(item => item !== checkedList[i])
+                    }
                 }
-            }
-            state.currentMusicIndex = state.fetchedMusicList.indexOf(state.currentPlayOrder[0])
 
-            state.checkedMusicList = []
-            state.checkedAll = false
-            state.deleteModal = false
+                state.checkedMusicList = []
+                state.checkedAll = false
+                state.deleteModal = false
+            }
         },
         // myplaylist 관련
         makePlaylist (state, payload) {

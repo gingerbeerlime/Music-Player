@@ -6,6 +6,7 @@
         <ul class="btns-group">
             <li></li>
             <li
+                v-if="$store.state.currentPosition === 'tab1'"
                 @click="showAddModal"
                 class="btn-add"
             >
@@ -57,7 +58,6 @@ export default {
     color: var(--font-point-white);
     line-height: 50px;
     text-align: center;
-
 }
 .selected-music-count > span {
     color: var(--point-green);
@@ -80,6 +80,7 @@ export default {
 .modal-tab1 .btns-group li > i {
     font-size: 14px;
     color: var(--font-gray);
+    cursor: pointer;
 }
 .modal-tab1 .btns-group li:hover > i {
     color: var(--font-point-white);
