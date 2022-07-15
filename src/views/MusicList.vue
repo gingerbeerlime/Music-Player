@@ -1,26 +1,37 @@
 <template>
     <div id="tab-box">
-            <!-- [1] tab buttons -->
+            <!-- tab buttons -->
             <div class="tab-btns-bg"></div>
-            <input type="radio" name="playlist" id="tab1" checked @click="changeTab($event)">
+            <input
+                @click="changeTab($event)"
+                type="radio"
+                name="playlist"
+                id="tab1"
+                checked
+            >
             <label for="tab1" class="tab-btn btn-list-all">
                 <p>곡<span>{{ $store.getters.getTotalMusicCount }}</span></p>
             </label>
-            <input type="radio" name="playlist" id="tab2" @click="changeTab($event)">
+            <input
+                @click="changeTab($event)"
+                type="radio"
+                name="playlist"
+                id="tab2"
+            >
             <label for="tab2" class="tab-btn btn-list-created">
                 <p>플레이리스트</p>
             </label>
 
-            <!-- [2] playing list -->
-            <!-- [2-1] 전체 음악 리스트 -->
-            <default-playlist class="play-list-all"></default-playlist>
-            <created-playlist class="play-list-created"></created-playlist>
+            <!-- tab1) default playlist -->
+            <default-playlist-tab class="play-list-all"></default-playlist-tab>
+            <!-- tab2) my playlists -->
+            <my-playlist-tab class="play-list-created"></my-playlist-tab>
         </div>
 </template>
 
 <script>
-import DefaultPlaylist from '../components/DefaultPlaylist.vue'
-import CreatedPlaylist from '../components/CreatedPlaylist.vue'
+import DefaultPlaylistTab from './DefaultPlaylistTab.vue'
+import MyPlaylistTab from './MyPlaylistTab.vue'
 
 export default {
     methods: {
@@ -30,16 +41,15 @@ export default {
         }
     },
     components: {
-        DefaultPlaylist,
-        CreatedPlaylist
+        DefaultPlaylistTab,
+        MyPlaylistTab
     }
 }
 </script>
 
-<style>
+<style scoped>
 #tab-box {
     width: 100%;
-    /* 60(button) & 288(list) */
     height: 344px;
     position: relative;
 }
@@ -53,7 +63,7 @@ export default {
     left: 50%;
     margin-left: -82.5px;
 }
-/* [1] tab_btns */
+/* tab buttons */
 input[type="radio"] {
     display: none;
 }
@@ -75,7 +85,6 @@ input[type="radio"] {
 .tab-btn > p {
     color: var(--font-gray);
     font-size: 12px;
-    /* font-weight: bold; */
 }
 .tab-btn > p > span {
     padding-left: 3px;
@@ -92,7 +101,7 @@ input[type="radio"] {
 #tab2:checked + label > p {
     color: var(--font-point-white);
 }
-/* [2] section: play list */
+/* section: play list */
 #tab-box > .play-list-all,
 #tab-box > .play-list-created {
     width: 100%;
@@ -102,16 +111,16 @@ input[type="radio"] {
     left: 0;
     overflow: hidden;
 }
+/* default */
 .play-list-all {
     display: none;
     z-index: 500;
 }
-/* tab2) 생성한 플레이리스트 섹션 */
+/* my playlists */
 .play-list-created {
     display: none;
     z-index: 800;
 }
-/* tab button 선택에 따라 리스트 전환 */
 #tab1:checked ~ .play-list-all {
     display: block;
 }

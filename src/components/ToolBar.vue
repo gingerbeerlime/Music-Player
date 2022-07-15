@@ -39,11 +39,11 @@ export default {
     transition: 0.02s all ease;
 
 }
-/* 최소화 */
+/* minimize */
 #tool-bar .fa-window-minimize {
     font-size: 12px;
 }
-/* 닫기 */
+/* close */
 #tool-bar .fa-xmark {
     font-size: 16px;
 }

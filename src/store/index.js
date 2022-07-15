@@ -6,30 +6,30 @@ Vue.use(Vuex)
 
 export const store = new Vuex.Store({
     state: {
-        rawMusicList: musicList,
+        fetchedMusicList: musicList,
         checkedMusicList: [],
         checkedAll: false,
-        playMode: 'repeat-all',
-        currentMusicList: [],
-        currentIndex: 0,
+        currentPlayOrder: [],
+        currentMusicIndex: 0,
         selectedMusic: null,
-        play: false,
+        playStatus: false,
         currentTime: 0,
         playTime: 0,
         timerId: null,
         totalMusicCount: 0,
+        myPlaylists: [],
+        showPlaylist: '',
+        playingPosition: 'tab1',
+        currentPosition: 'tab1',
+        playMode: 'repeat-all',
         deleteModal: false,
         createModal: false,
         addModal: false,
-        alertModal: false,
-        myPlaylists: [],
-        viewPlaylist: '',
-        playingPosition: 'default',
-        currentPosition: 'tab1'
+        alertModal: false
     },
     getters: {
         getCurrentMusic (state) {
-            const playlist = state.currentMusicList
+            const playlist = state.currentPlayOrder
             const currentMusic = playlist[0] ?? ''
             return currentMusic
         },
@@ -52,6 +52,9 @@ export const store = new Vuex.Store({
         getTotalMusicCount (state) {
             return state.totalMusicCount
         },
+        getCurrentPlaylistCount (state) {
+            return state.currentPlayOrder.length
+        },
         getCheckedMusicList (state) {
             return state.checkedMusicList
         },
@@ -61,21 +64,18 @@ export const store = new Vuex.Store({
         getDefaultPlaylistName (state) {
             const playlistsCount = state.myPlaylists.length + 1
             return `플레이리스트 ${playlistsCount}`
-        },
-        getCurrentMusicCount (state) {
-            return state.currentMusicList.length
         }
     },
     mutations: {
-        // 처음 로딩시 첫번째곡 세팅
-        setMusicList (state) {
-            state.currentMusicList.push(...state.rawMusicList)
-            state.currentIndex = 0
-            state.currentTime = state.currentMusicList[0].playtime
-            state.playTime = state.currentMusicList[0].playtime
-            state.totalMusicCount = state.rawMusicList.length
+        // first set musiclist
+        setFetchedMusicList (state) {
+            state.currentPlayOrder.push(...state.fetchedMusicList)
+            state.currentMusicIndex = 0
+            state.currentTime = state.currentPlayOrder[0].playtime
+            state.playTime = state.currentPlayOrder[0].playtime
+            state.totalMusicCount = state.fetchedMusicList.length
         },
-        // default list mutations
+        // list event
         toggleCheck (state, payload) {
             const list = state.checkedMusicList
             const checkedItem = payload.item
@@ -96,65 +96,64 @@ export const store = new Vuex.Store({
         toggleCheckAll (state) {
             state.checkedAll = !state.checkedAll
             if (state.checkedAll) {
-                state.checkedMusicList = state.currentMusicList
+                state.checkedMusicList = state.currentPlayOrder
             } else {
                 state.checkedMusicList = []
             }
         },
         changeMusic (state, payload) {
-            // prev, next 찍어보기
-            // 재생중이던 노래 중지
-            if (state.play) {
-                state.play = false
+            if (state.playStatus) {
+                state.playStatus = false
                 clearInterval(state.timerId)
             }
-            // 재생 순서 재정렬
+            // playlist rearrange
             let movingNum
-            if (payload.index > state.currentIndex) {
-                movingNum = payload.index - state.currentIndex
-            } else if (payload.index < state.currentIndex) {
-                movingNum = (payload.index - 0) + ((state.totalMusicCount - 1) - (state.currentIndex - 1))
+            if (payload.index > state.currentMusicIndex) {
+                movingNum = payload.index - state.currentMusicIndex
+            } else if (payload.index < state.currentMusicIndex) {
+                movingNum = (payload.index - 0) + ((state.currentPlayOrder.length - 1) - (state.currentMusicIndex - 1))
             } else {
-                return
+                movingNum = 0
             }
-            const movingMusics = state.currentMusicList.splice(0, movingNum)
-            state.currentMusicList.push(...movingMusics)
-            // 바뀐 곡정보 state 저장
-            state.currentIndex = payload.index
+            const movingMusics = state.currentPlayOrder.splice(0, movingNum)
+
+            state.currentPlayOrder.push(...movingMusics)
+            console.log(payload.index)
+            state.currentMusicIndex = payload.index
             state.currentTime = Number(payload.item.playtime)
             state.playTime = Number(payload.item.playtime)
-            // 체크된 항목 리셋
+
             state.checkedMusicList = []
             state.checkedAll = false
         },
         selectMusic (state, payload) {
             state.selectedMusic = payload.item
         },
-        // 음악 재생 & 정지
+        // music playing mutations
         startMusic (state) {
             function goNextMusic () {
-                const playlist = state.currentMusicList
+                const playlist = state.currentPlayOrder
                 const finishedMusic = playlist.splice(0, 1)
-                playlist.push(finishedMusic)
-                const nextMusic = state.currentMusicList[0]
+                playlist.push(...finishedMusic)
+                const nextMusic = state.currentPlayOrder[0]
                 state.currentTime = nextMusic.playtime
                 state.playTime = nextMusic.playtime
-                if (state.currentIndex === (state.currentMusicList.length - 1)) {
-                    state.currentIndex = 0
+                if (state.currentMusicIndex === (state.currentPlayOrder.length - 1)) {
+                    state.currentMusicIndex = 0
                 } else {
-                    state.currentIndex++
+                    state.currentMusicIndex++
                 }
             }
 
             function startMusicTimer (time) {
-                state.play = true
+                state.playStatus = true
                 let currentTime = Number(time)
 
                 const timerId = setInterval(function () {
                     state.currentTime = currentTime
                     if (currentTime <= 0) {
                         clearInterval(timerId)
-                        state.play = false
+                        state.playStatus = false
                         goNextMusic()
                         state.timerId = startMusicTimer(state.currentTime)
                     }
@@ -167,69 +166,52 @@ export const store = new Vuex.Store({
             state.timerId = startMusicTimer(state.currentTime)
         },
         stopMusic (state) {
-            state.play = false
+            state.playStatus = false
             clearInterval(state.timerId)
         },
-        showDeleteModal (state) {
-            state.deleteModal = true
-        },
-        closeDeleteModal (state) {
-            state.deleteModal = false
-        },
         deleteMusic (state) {
-            // 삭제할 리스트
+            // 삭제 리스트
             const checkedList = state.checkedMusicList
 
             // 삭제 리스트에 현재 재생중/일시정지 노래가 포함되어있을 때
-            const currentMusic = state.currentMusicList[0]
+            const currentMusic = state.currentPlayOrder[0]
             const except = checkedList.includes(currentMusic)
 
-            // rawlist 갱신
-            let newList = state.rawMusicList
+            let newList = state.fetchedMusicList
             for (let i = 0; i < checkedList.length; i++) {
                 newList = newList.filter(item => item !== checkedList[i])
             }
-            state.rawMusicList = newList
+            state.fetchedMusicList = newList
             state.totalMusicCount = newList.length
 
             // 현재 playlist 갱신
-            let newPlaylist = state.currentMusicList
+            let newPlaylist = state.currentPlayOrder
             for (let i = 0; i < checkedList.length; i++) {
                 newPlaylist = newPlaylist.filter(item => item !== checkedList[i])
             }
-            state.currentMusicList = newPlaylist
+            state.currentPlayOrder = newPlaylist
 
-            // checkedlist에 현재 재생중/일시정지 노래가 포함되어있을 때
+            // 예외처리
             if (except) {
-                if (state.play) {
+                if (state.playStatus) {
                     clearInterval(state.timerId)
-                    state.play = false
+                    state.playStatus = false
                 }
                 if (state.totalMusicCount) {
-                    state.currentTime = state.currentMusicList[0].playtime
-                    state.playTime = state.currentMusicList[0].playtime
+                    state.currentTime = state.currentPlayOrder[0].playtime
+                    state.playTime = state.currentPlayOrder[0].playtime
                 } else {
                     state.currentTime = 0
                     state.playTime = 0
                 }
             }
-            // currentIndex 삭제되는 첫번째 아이템의 인덱스로 변경
-            state.currentIndex = state.rawMusicList.indexOf(state.currentMusicList[0])
-            // checkedlist 초기화
+            state.currentMusicIndex = state.fetchedMusicList.indexOf(state.currentPlayOrder[0])
+
             state.checkedMusicList = []
             state.checkedAll = false
-            // 모달 닫기
             state.deleteModal = false
-            // 재생중인 노래가 포함된 경우? 리스트에서 사라지나 노래는 끝까지 재생
         },
-        // 새 플레이리스트 만들기
-        showCreateModal (state) {
-            state.createModal = true
-        },
-        closeCreateModal (state) {
-            state.createModal = false
-        },
-        // 플레이리스트 폴더 생성
+        // myplaylist 관련
         makePlaylist (state, payload) {
             const newList = {
                 name: payload.playlistName,
@@ -237,20 +219,12 @@ export const store = new Vuex.Store({
                 thumbnail: 'default_image'
             }
             state.myPlaylists.push(newList)
-            // 선택한 노래가 있는 경우 / 폴더만 생성하는 경우
+            // 선택한 노래로 만드는 경우 / 폴더만 생성하는 경우
             if (state.checkedMusicList.length === 0) {
                 state.createModal = false
             }
         },
-        showAddModal (state) {
-            state.addModal = true
-        },
-        closeAddModal (state) {
-            state.addModal = false
-        },
-        // 플레이리스트에 노래 추가
         addMusicToPlaylist (state, payload) {
-            // 체크된 노래 리스트에 추가
             const addMusicList = state.checkedMusicList
             const myPlaylists = state.myPlaylists
 
@@ -259,9 +233,9 @@ export const store = new Vuex.Store({
                 if (playlistName !== payload.name) continue
                 const playlist = myPlaylists[i].list
                 // 노래 중복 제거
-                const addUniqueMusicList = addMusicList.filter(item => !playlist.includes(item))
-                playlist.push(...addUniqueMusicList)
-                // 썸네일 변경-첫번째곡 사진
+                const uniqueMusicList = addMusicList.filter(item => !playlist.includes(item))
+                playlist.push(...uniqueMusicList)
+                // thumbnail - 첫번째곡
                 myPlaylists[i].thumbnail = playlist[0].photo
                 break
             }
@@ -273,7 +247,7 @@ export const store = new Vuex.Store({
             }
             state.checkedMusicList = []
 
-            // alert 띄우기
+            // alert
             setTimeout(function () {
                 state.alertModal = true
                 setTimeout(function () {
@@ -282,39 +256,57 @@ export const store = new Vuex.Store({
             }, 300)
         },
         showPlaylist (state, payload) {
-            state.viewPlaylist = payload.name
+            state.showPlaylist = payload.name
             state.currentPosition = payload.name
         },
         returnToPlaylist (state) {
-            state.viewPlaylist = ''
+            state.showPlaylist = ''
             state.checkedMusicList = []
             state.checkedAll = false
             state.currentPosition = 'tab2'
         },
+        // tab 전환
         changeTab (state, payload) {
             if (state.currentPosition !== payload.tabId) {
                 state.checkedMusicList = []
                 state.checkedAll = false
             }
             state.currentPosition = payload.tabId
-            state.viewPlaylist = ''
+            state.showPlaylist = ''
         },
-        // 재생리스트 리셋
-        resetCurrentPlaylist (state, payload) {
+        // 현재 재생목록 reset
+        resetCurrentPlaylist (state) {
             const currentPlaylist = state.currentPosition
-            // const newPlaylist = state.myPlaylists.filter(item => item.name === currentPlaylist)[0].list
-            // console.log(payload.index)
-            // const movingItems = newPlaylist.splice(0, payload.index)
-            // newPlaylist.push(...movingItems)
             const newPlaylist = state.myPlaylists.find(item => item.name === currentPlaylist)
-            console.log(newPlaylist.list)
-            state.currentMusicList = []
-            state.currentMusicList.push(...newPlaylist.list)
-            // newPlaylist = ...newPlaylist
-            // newPlaylist = newPlaylist.list
-            // console.log(`newPlaylist: ${newPlaylist}`)
-            // state.currentMusicList = newPlaylist
-            state.currentIndex = 0
+            state.currentPlayOrder = []
+            state.currentPlayOrder.push(...newPlaylist.list)
+            state.currentMusicIndex = 0
+            state.playingPosition = state.currentPosition
+        },
+        resetDefaultPlaylist (state) {
+            state.currentPlayOrder = []
+            state.currentPlayOrder.push(...state.fetchedMusicList)
+            state.currentMusicIndex = 0
+            state.playingPosition = state.currentPosition
+        },
+        // modal
+        showCreateModal (state) {
+            state.createModal = true
+        },
+        closeCreateModal (state) {
+            state.createModal = false
+        },
+        showDeleteModal (state) {
+            state.deleteModal = true
+        },
+        closeDeleteModal (state) {
+            state.deleteModal = false
+        },
+        showAddModal (state) {
+            state.addModal = true
+        },
+        closeAddModal (state) {
+            state.addModal = false
         }
     }
 })

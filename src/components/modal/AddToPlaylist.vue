@@ -1,5 +1,8 @@
 <template>
-    <div class="modal-wrap" @click="closeAddModal">
+    <div
+        @click="closeAddModal"
+        class="modal-wrap"
+    >
         <div class="modal-tab4">
             <header @click="showCreateModal">
                 <h3>
@@ -8,8 +11,8 @@
                 </h3>
             </header>
             <ul
-                class="playlist-group no-scroll"
                 v-if="playlistNames.length"
+                class="playlist-group no-scroll"
             >
                 <li
                     v-for="name in playlistNames"
@@ -25,15 +28,14 @@
 <script>
 export default {
     methods: {
+        showCreateModal () {
+            this.$store.commit('showCreateModal')
+        },
         closeAddModal () {
             this.$store.commit('closeAddModal')
         },
         addMusicToPlaylist (name) {
             this.$store.commit('addMusicToPlaylist', { name })
-        },
-        // 새 플레이리스트 만들기
-        showCreateModal () {
-            this.$store.commit('showCreateModal')
         }
     },
     computed: {
@@ -58,7 +60,6 @@ export default {
 }
 .modal-tab4 {
     width: 275px;
-    /* height: 180px; */
     background-color: var(--modal-bg-gray);
     position: absolute;
     bottom: 8px;

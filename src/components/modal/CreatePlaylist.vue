@@ -6,9 +6,16 @@
                     <h2>새 플레이리스트 만들기</h2>
                 </header>
                 <div class="input-box">
-                    <input type="text" class="input_playlist_name" v-model="playlistName">
+                    <input
+                        v-model.trim="playlistName"
+                        type="text"
+                        maxlength="20"
+                        class="input_playlist_name"
+                    >
                     <i class="fa-solid fa-xmark"></i>
-                    <p class="char_num"><span>16</span>/40</p>
+                    <p class="char_num">
+                        <span>{{ countInputLetters }}</span>/20
+                    </p>
                 </div>
                 <ul class="btns-group">
                     <li @click="makePlaylist(playlistName)">확인</li>
@@ -35,6 +42,11 @@ export default {
             if (this.$store.state.checkedMusicList.length >= 1) {
                 this.$store.commit('addMusicToPlaylist', { name: playlistName })
             }
+        }
+    },
+    computed: {
+        countInputLetters: function () {
+            return this.playlistName.length
         }
     }
 }
@@ -150,7 +162,7 @@ export default {
     color: var(--font-point-white);
     transition: 0.02s all ease;
 }
-/* 모달 트랜지션 */
+/* modal transition */
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.4s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;

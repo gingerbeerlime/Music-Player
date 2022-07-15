@@ -1,16 +1,16 @@
 <template>
     <div class="modal-tab1">
-        <p class="selected-music-count">선택된 <span>{{ checkedMusicCount }}</span> 곡을</p>
+        <p class="selected-music-count">
+            선택된 <span>{{ checkedMusicCount }}</span> 곡을
+        </p>
         <ul class="btns-group">
             <li></li>
-            <!-- 플레이리스트에 추가 -->
             <li
                 @click="showAddModal"
                 class="btn-add"
             >
                 <i class="fa-solid fa-plus"></i>
             </li>
-            <!-- 노래 삭제 -->
             <li
                 @click="showDeleteModal"
                 class="btn-delete"

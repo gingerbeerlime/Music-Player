@@ -7,25 +7,31 @@
             <li class="play-btns">
                 <ul>
                     <!-- prev button -->
-                    <li class="prev" @click="changeMusic(prevMusic, prevIdx)">
+                    <li
+                        class="prev"
+                        @click="changeMusic(prevMusic, prevIdx)"
+                    >
                         <i class="fa-solid fa-backward-step"></i>
                     </li>
                     <li class="play">
-                        <!-- 일시정지 버튼-->
+                        <!-- pause button -->
                         <i
-                            v-if="$store.state.play"
+                            v-if="$store.state.playStatus"
                             @click="stopMusic"
                             class="fa-solid fa-pause"
                         ></i>
-                        <!-- 재생 버튼 -->
+                        <!-- play button -->
                         <i
                             v-else
-                            class="fa-solid fa-play"
                             @click="startMusic"
+                            class="fa-solid fa-play"
                         ></i>
                     </li>
                     <!-- next button -->
-                    <li class="next" @click="changeMusic(nextMusic, nextIdx)">
+                    <li
+                        class="next"
+                        @click="changeMusic(nextMusic, nextIdx)"
+                    >
                         <i class="fa-solid fa-forward-step"></i>
                     </li>
                 </ul>
@@ -55,25 +61,27 @@ export default {
     },
     computed: {
         playStatus: function () {
-            return this.$store.state.play
+            return this.$store.state.playStatus
         },
         prevMusic: function () {
-            const finalIdx = this.$store.getters.getCurrentMusicCount - 1
-            return this.$store.state.currentMusicList[finalIdx]
+            const finalIdx = this.$store.getters.getCurrentPlaylistCount - 1
+            console.log(finalIdx)
+            console.log(this.$store.state.currentPlayOrder[finalIdx])
+            return this.$store.state.currentPlayOrder[finalIdx]
         },
         nextMusic: function () {
-            return this.$store.state.currentMusicList[1]
+            return this.$store.state.currentPlayOrder[1]
         },
         prevIdx: function () {
-            let index = this.$store.state.currentIndex
-            if (index === 0) index = this.$store.getters.getCurrentMusicCount - 1
+            let index = this.$store.state.currentMusicIndex
+            if (index === 0) index = this.$store.getters.getCurrentPlaylistCount - 1
             else index--
 
             return index
         },
         nextIdx: function () {
-            let index = this.$store.state.currentIndex
-            if (index === (this.$store.getters.getCurrentMusicCount - 1)) index = 0
+            let index = this.$store.state.currentMusicIndex
+            if (index === (this.$store.getters.getCurrentPlaylistCount - 1)) index = 0
             else index++
 
             return index

@@ -5,8 +5,9 @@
             <music-view></music-view>
             <player-control></player-control>
             <music-list></music-list>
+            <!-- modals -->
             <transition name="slide" appear>
-                <music-control v-if="$store.state.checkedMusicList.length"></music-control>
+                <edit-music v-if="$store.state.checkedMusicList.length"></edit-music>
             </transition>
             <transition name="fade" appear>
                 <delete-modal v-if="$store.state.deleteModal"></delete-modal>
@@ -28,21 +29,21 @@ import MusicView from './views/MusicView.vue'
 import PlayerControl from './views/PlayerControl.vue'
 import MusicList from './views/MusicList.vue'
 import CreatePlaylist from './components/modal/CreatePlaylist.vue'
-import MusicControl from './components/modal/MusicControl.vue'
+import EditMusic from './components/modal/EditMusic.vue'
 import DeleteModal from './components/modal/DeleteModal.vue'
 import AddToPlaylist from './components/modal/AddToPlaylist.vue'
 import AddAlert from './components/modal/AddAlert.vue'
 
 export default {
     created () {
-        this.$store.commit('setMusicList')
+        this.$store.commit('setFetchedMusicList')
     },
     components: {
         ToolBar,
         MusicView,
         PlayerControl,
         MusicList,
-        MusicControl,
+        EditMusic,
         DeleteModal,
         CreatePlaylist,
         AddToPlaylist,
@@ -84,7 +85,7 @@ body {
     -webkit-user-select: none;
     user-select: none;
 }
-/* [player contianer] */
+/* [player container] */
 #player {
     width: 305px;
     height: 720px;
@@ -94,7 +95,7 @@ body {
     box-shadow: 0 0 6px #444;
     position: relative;
 }
-/* 모달 트랜지션 */
+/* modal transition */
 .slide-enter-active,
 .slide-leave-active {
   transition: transform 0.3s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.4s linear;
@@ -105,7 +106,7 @@ body {
   opacity: 0;
   transform: translateY(100%);
 }
-/* slide slow version */
+/* slow version */
 .slide2-enter-active,
 .slide2-leave-active {
   transition: transform 1s cubic-bezier(0.8, 0, 0.5, 1), opacity 0.4s linear;

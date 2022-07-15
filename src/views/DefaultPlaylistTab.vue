@@ -6,8 +6,8 @@
                     @click="toggleCheckAll"
                     :checked="$store.state.checkedAll"
                     type="checkbox"
-                    class="check-btn"
                     id="check-btn-all"
+                    class="check-btn"
                 />
                 <div class="icons-check">
                     <div class="icon-small-square"></div>
@@ -16,10 +16,10 @@
             </label>
             <p class="music-count">전체선택</p>
         </header>
-        <!-- 음악이 없을 때 -->
+        <!-- empty list -->
         <p
             v-if="$store.state.totalMusicCount === 0"
-            class="no-list-message"
+            class="empty-list-message"
         >
             <i class="fa-solid fa-music"></i>
             리스트가 비어있습니다.
@@ -27,29 +27,29 @@
         <!-- 음악목록 -->
         <ul class="list-box">
             <li
-                v-for="(item, index) in $store.state.rawMusicList"
-                :key="item.key"
+                v-for="(item, index) in $store.state.fetchedMusicList"
                 @dblclick="changeMusic(item, index)"
                 @click="selectMusic(item)"
-                :class="{'_click': $store.state.selectedMusic === item, 'playing-now': $store.getters.getCurrentMusic === item}"
+                :key="item.key"
+                :class="{'_click': $store.state.selectedMusic === item, 'playing-now': $store.getters.getCurrentMusic === item && $store.state.playingPosition === 'tab1' }"
             >
-            <!-- checkbox -->
-            <label class="checkbox-wrap">
-                <input
-                    @click="toggleCheck(item)"
-                    type="checkbox"
-                    class="check-btn"
-                    :checked="checkedMusicList.includes(item)"
-                />
-                <div class="icons-check">
-                    <div class="icon-small-square"></div>
-                    <i class="fa-solid fa-check"></i>
-                </div>
-            </label>
+                <!-- checkbox -->
+                <label class="checkbox-wrap">
+                    <input
+                        @click="toggleCheck(item)"
+                        type="checkbox"
+                        class="check-btn"
+                        :checked="checkedMusicList.includes(item)"
+                    />
+                    <div class="icons-check">
+                        <div class="icon-small-square"></div>
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                </label>
                 <!-- music title -->
                 <p class="title">
                     <audio-visual-icon
-                        v-if="$store.state.play && $store.getters.getCurrentMusic === item"
+                        v-if="$store.state.playStatus && $store.getters.getCurrentMusic === item && $store.state.playingPosition === 'tab1'"
                     ></audio-visual-icon>
                     {{ item.title }}
                 </p>
@@ -72,6 +72,9 @@ export default {
             this.$store.commit('toggleCheckAll')
         },
         changeMusic (item, index) {
+            if (this.$store.state.currentPosition !== this.$store.state.playingPosition) {
+                this.$store.commit('resetDefaultPlaylist')
+            }
             this.$store.commit('changeMusic', { item, index })
             this.$store.commit('startMusic')
         },
@@ -104,8 +107,8 @@ export default {
     line-height: 37px;
     color: var(--font-gray);
 }
-/* no-list message */
-.no-list-message {
+/* empty list message */
+.empty-list-message {
     color: var(--font-gray);
     text-align: center;
     font-size: 14px;
@@ -182,6 +185,7 @@ input[type="checkbox"] {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+/* artist */
 .play-list-all .list-box .artist {
     width: 62px;
     max-width: 62px;
@@ -190,7 +194,7 @@ input[type="checkbox"] {
     text-overflow: ellipsis;
     margin-left: 30px;
 }
-/* 재생중 리스트 효과 */
+/* current playing music style */
 .play-list-all .list-box li.playing-now > p {
     color: var(--point-green);
 }

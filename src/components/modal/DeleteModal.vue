@@ -15,11 +15,11 @@
 <script>
 export default {
     methods: {
-        closeDeleteModal () {
-            this.$store.commit('closeDeleteModal')
-        },
         deleteMusic () {
             this.$store.commit('deleteMusic')
+        },
+        closeDeleteModal () {
+            this.$store.commit('closeDeleteModal')
         }
     },
     computed: {
