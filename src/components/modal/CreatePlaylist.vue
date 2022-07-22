@@ -13,12 +13,23 @@
                         class="input_playlist_name"
                     >
                     <i class="fa-solid fa-xmark"></i>
-                    <p class="char_num">
-                        <span>{{ countInputLetters }}</span>/20
-                    </p>
+                    <div class="info-wrap">
+                        <p
+                            v-if="!uniqueName"
+                            class="warning-text"
+                        >
+                            중복된 이름입니다.
+                        </p>
+                        <p class="char-num">
+                            <span>{{ countInputLetters }}</span>/20
+                        </p>
+                    </div>
                 </div>
                 <ul class="btns-group">
-                    <li @click="makePlaylist(playlistName)">확인</li>
+                    <li
+                        @click="makePlaylist(playlistName)"
+                        :class="{'not-active': !uniqueName}"
+                    >확인</li>
                     <li @click="closeCreateModal">취소</li>
                 </ul>
             </div>
@@ -30,7 +41,8 @@
 export default {
     data () {
         return {
-            playlistName: this.$store.getters.getDefaultPlaylistName
+            playlistName: this.$store.getters.getDefaultPlaylistName,
+            uniqueName: true
         }
     },
     methods: {
@@ -38,6 +50,7 @@ export default {
             this.$store.commit('closeCreateModal')
         },
         makePlaylist (playlistName) {
+            if (!this.uniqueName) return
             this.$store.commit('makePlaylist', { playlistName })
             if (this.$store.state.checkedMusicList.length >= 1) {
                 this.$store.commit('addMusicToPlaylist', { name: playlistName })
@@ -45,8 +58,22 @@ export default {
         }
     },
     computed: {
-        countInputLetters: function () {
+        countInputLetters () {
             return this.playlistName.length
+        }
+    },
+    watch: {
+        playlistName () {
+            // 중복검사
+            const myPlaylists = this.$store.state.myPlaylists
+            for (let i = 0; i < myPlaylists.length; i++) {
+                if (this.playlistName === myPlaylists[i].name) {
+                    this.uniqueName = false
+                    break
+                } else {
+                    this.uniqueName = true
+                }
+            }
         }
     }
 }
@@ -124,19 +151,29 @@ export default {
     right: 30px;
     cursor: pointer;
 }
-.modal-tab2 .input-box .char_num {
+.info-wrap {
     width: 235px;
     height: 30px;
     position: absolute;
     top: 38px;
     left: 50%;
     margin-left: -117.5px;
+    display: flex;
+    justify-content: space-between;
+}
+.info-wrap .warning-text {
+    font-size: 11px;
+    line-height: 30px;
+    color: rgba(255, 0, 0, 0.7);
+    padding-left: 5px;
+}
+.modal-tab2 .input-box .char-num {
     font-size: 13px;
     line-height: 30px;
-    text-align: right;
     color: rgb(211, 211, 211, 0.2);
+    margin-left: auto;
 }
-.modal-tab2 .input-box .char_num span {
+.modal-tab2 .input-box .char-num span {
     color: rgb(245, 245, 245, 0.7);
 }
 /* buttons(okay, cancel) */
@@ -161,6 +198,11 @@ export default {
     border: 1px solid var(--font-point-white);
     color: var(--font-point-white);
     transition: 0.02s all ease;
+}
+.modal-tab2 .btns-group li.not-active {
+    color: rgb(185, 185, 185, 0.7);
+    border: 1px solid rgb(185, 185, 185, 0.7);
+    cursor: not-allowed;
 }
 /* modal transition */
 .slide-enter-active,

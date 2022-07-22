@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import MyPlaylistsView from './MyPlaylistsView.vue'
-import PlayingList from './PlayingList.vue'
+import MyPlaylistsView from './myplaylist/MyPlaylistsView.vue'
+import PlayingList from './myplaylist/PlayingList.vue'
 
 export default {
     computed: {
-        listViewMode: function () {
+        listViewMode () {
             let listMode
             if (this.$store.state.showPlaylist === '') listMode = true
             else listMode = false

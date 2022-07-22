@@ -50,23 +50,23 @@ export default {
         }
     },
     computed: {
-        myPlaylists: function () {
+        myPlaylists () {
             return this.$store.getters.getMyPlaylists
         },
-        myPlaylistsInfo: function () {
+        myPlaylistsInfo () {
             const infoBox = []
             for (let i = 0; i < this.myPlaylists.length; i++) {
                 const playlist = this.myPlaylists[i]
                 console.log(playlist)
                 const name = playlist.name
                 const count = playlist.list.length
-                const thumbnail = playlist.thumbnail
+                const thumbnail = playlist.list[0] ? playlist.list[0].photo : 'default_image'
                 const info = { playlistName: name, totalMusicCount: count, imgUrl: thumbnail }
                 infoBox.push(info)
             }
             return infoBox
         },
-        myPlaylistsCount: function () {
+        myPlaylistsCount () {
             return this.$store.state.myPlaylists.length
         }
     }
@@ -176,8 +176,5 @@ export default {
 /* select item style */
 .list-box ._click {
     background-color: var( --selected-bg-gray-opacity);
-}
-.list-box ._click .icon-small-square {
-    background-color: rgba(51, 51, 51);
 }
 </style>

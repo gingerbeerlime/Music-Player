@@ -39,7 +39,7 @@ export default {
         }
     },
     computed: {
-        playlistNames: function () {
+        playlistNames () {
             const playlists = this.$store.getters.getMyPlaylists
             const namesArray = []
             playlists.forEach(item => namesArray.push(item.name))

@@ -1,13 +1,13 @@
 <template>
-    <section>
+    <div>
         <header class="btns-container">
             <label class="checkbox-wrap">
                 <input
                     @click="toggleCheckAll"
                     :checked="$store.state.checkedAll"
                     type="checkbox"
-                    id="check-btn-all"
                     class="check-btn"
+                    id="check-btn-all"
                 />
                 <div class="icons-check">
                     <div class="icon-small-square"></div>
@@ -15,23 +15,26 @@
                 </div>
             </label>
             <p class="music-count">전체선택</p>
+            <!-- 다른 부분 -->
+            <p
+                @click="returnToPlaylist"
+                class="return"
+            >
+                플레이리스트 보기
+                <i class="fa-solid fa-bars"></i>
+            </p>
+            <!-- 다른 부분 -->
         </header>
-        <!-- empty list -->
-        <p
-            v-if="$store.state.totalMusicCount === 0"
-            class="empty-list-message"
-        >
-            <i class="fa-solid fa-music"></i>
-            리스트가 비어있습니다.
-        </p>
-        <!-- 음악목록 -->
         <ul class="list-box">
             <li
-                v-for="(item, index) in $store.state.fetchedMusicList"
+                v-for="(item, index) in getCurrentPlaylist"
+                :key="item.key"
                 @dblclick="changeMusic(item, index)"
                 @click="selectMusic(item)"
-                :key="item.key"
-                :class="{'_click': $store.state.selectedMusic === item, 'playing-now': $store.getters.getCurrentMusic === item && $store.state.playingPosition === 'tab1' }"
+                :class="{
+                    '_click': $store.state.selectedMusic === item,
+                    'playing-now': $store.getters.getCurrentMusic === item && $store.state.playingPosition === $store.state.currentPosition
+                }"
             >
                 <!-- checkbox -->
                 <label class="checkbox-wrap">
@@ -49,7 +52,7 @@
                 <!-- music title -->
                 <p class="title">
                     <audio-visual-icon
-                        v-if="$store.state.playStatus && $store.getters.getCurrentMusic === item && $store.state.playingPosition === 'tab1'"
+                        v-if="$store.state.playStatus && $store.getters.getCurrentMusic === item && $store.state.playingPosition === $store.state.currentPosition"
                     ></audio-visual-icon>
                     {{ item.title }}
                 </p>
@@ -57,11 +60,11 @@
                 <p class="artist">{{ item.artist }}</p>
             </li>
         </ul>
-    </section>
+    </div>
 </template>
 
-<script scoped>
-import AudioVisualIcon from '../components/icon/AudioVisualIcon.vue'
+<script>
+import AudioVisualIcon from '../../icon/AudioVisualIcon.vue'
 
 export default {
     methods: {
@@ -72,18 +75,33 @@ export default {
             this.$store.commit('toggleCheckAll')
         },
         changeMusic (item, index) {
-            if (this.$store.state.currentPosition !== this.$store.state.playingPosition) {
-                this.$store.commit('resetDefaultPlaylist')
+            if (this.$store.state.playingPosition !== this.$store.state.currentPosition) {
+                this.$store.commit('resetCurrentPlaylist', { index })
             }
             this.$store.commit('changeMusic', { item, index })
             this.$store.commit('startMusic')
         },
         selectMusic (item) {
             this.$store.commit('selectMusic', { item })
+        },
+        returnToPlaylist () {
+            this.$store.commit('returnToPlaylist')
         }
     },
     computed: {
-        checkedMusicList: function () {
+        getCurrentPlaylist () {
+            const playlistName = this.$store.state.showPlaylist
+            const allPlaylists = this.$store.state.myPlaylists
+            let currentPlaylist
+            for (let i = 0; i < allPlaylists.length; i++) {
+                if (allPlaylists[i].name === playlistName) {
+                    currentPlaylist = allPlaylists[i].list
+                    break
+                }
+            }
+            return currentPlaylist
+        },
+        checkedMusicList () {
             return this.$store.getters.getCheckedMusicList
         }
     },
@@ -93,40 +111,49 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.play-list-created .playlist-play {
+    width: 100%;
+    height: 100%;
+}
 /* header */
-.play-list-all .btns-container {
+.playlist-play .btns-container {
     width: 100%;
     height: 37px;
     display: flex;
     align-items: center;
 }
-.play-list-all .music-count {
+.playlist-play .music-count {
     font-size: 10.5px;
     font-weight: bolder;
     line-height: 37px;
     color: var(--font-gray);
 }
-/* empty list message */
-.empty-list-message {
+.playlist-play .return {
+    font-size: 10.5px;
+    font-weight: bolder;
+    line-height: 37px;
     color: var(--font-gray);
-    text-align: center;
-    font-size: 14px;
-    line-height: 70px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 15px;
 }
-.fa-music {
-    color: var(--font-gray);
-    font-size: 12px;
-    padding-right: 5px;
+.playlist-play .return:hover {
+    color: var(--font-point-white);
+    transition: 0.2s all ease;
+}
+.fa-bars {
+    padding-left: 3px;
+    cursor: pointer;
 }
 /* listbox */
-.play-list-all .list-box {
+.playlist-play .list-box {
     width: 100%;
     height: 247px;
     padding-bottom: 40px;
     overflow: scroll;
 }
-.play-list-all .list-box > li {
+.playlist-play .list-box > li {
     width: 100%;
     height: 37px;
     display: flex;
@@ -171,12 +198,12 @@ input[type="checkbox"] {
     display: block;
 }
 /* music title */
-.play-list-all .list-box p {
+.playlist-play .list-box p {
     color: var(--font-gray);
     font-size: 13px;
     line-height: 37px;
 }
-.play-list-all .list-box .title {
+.playlist-play .list-box .title {
     display: flex;
     align-items: center;
     width: 150px;
@@ -185,8 +212,7 @@ input[type="checkbox"] {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-/* artist */
-.play-list-all .list-box .artist {
+.playlist-play .list-box .artist {
     width: 62px;
     max-width: 62px;
     overflow: hidden;
@@ -194,8 +220,8 @@ input[type="checkbox"] {
     text-overflow: ellipsis;
     margin-left: 30px;
 }
-/* current playing music style */
-.play-list-all .list-box li.playing-now > p {
+/* playing effect */
+.playlist-play .list-box li.playing-now > p {
     color: var(--point-green);
 }
 </style>

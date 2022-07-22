@@ -33,7 +33,7 @@ export default {
         }
     },
     computed: {
-        checkedMusicCount: function () {
+        checkedMusicCount () {
             return this.$store.state.checkedMusicList.length
         }
     }

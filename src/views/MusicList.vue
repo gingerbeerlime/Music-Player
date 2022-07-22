@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import DefaultPlaylistTab from './DefaultPlaylistTab.vue'
-import MyPlaylistTab from './MyPlaylistTab.vue'
+import DefaultPlaylistTab from '../components/musiclist/DefaultPlaylistTab.vue'
+import MyPlaylistTab from '../components/musiclist/MyPlaylistTab.vue'
 
 export default {
     methods: {
@@ -119,7 +119,7 @@ input[type="radio"] {
 /* my playlists */
 .play-list-created {
     display: none;
-    z-index: 800;
+    z-index: 550;
 }
 #tab1:checked ~ .play-list-all {
     display: block;

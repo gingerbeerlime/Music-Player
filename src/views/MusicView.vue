@@ -21,15 +21,6 @@
 <script>
 export default {
     computed: {
-        imgUrl: function () {
-            let imgUrl
-            if (this.$store.getters.getCurrentMusic) {
-                imgUrl = this.$store.getters.getCurrentMusic.photo
-            } else {
-                imgUrl = 'default_image'
-            }
-            return imgUrl
-        },
         currentMusicInfo () {
             let imgUrl, title, artist
             if (this.$store.getters.getCurrentMusic === '') {

@@ -16,14 +16,18 @@
 export default {
     methods: {
         deleteMusic () {
-            this.$store.commit('deleteMusic')
+            if (this.$store.state.currentPosition === 'tab1') {
+                this.$store.commit('deleteMusicFromDefaultList')
+            } else {
+                this.$store.commit('deleteMusicFromMyPlaylist')
+            }
         },
         closeDeleteModal () {
             this.$store.commit('closeDeleteModal')
         }
     },
     computed: {
-        checkedMusicCount: function () {
+        checkedMusicCount () {
             return this.$store.getters.getCheckedMusicList.length
         }
     }

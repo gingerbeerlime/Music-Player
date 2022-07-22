@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import ProgressBar from '../components/player/ProgressBar.vue'
-import PlayerTool from '../components/player/PlayerTool.vue'
+import ProgressBar from '../components/playercontrol/ProgressBar.vue'
+import PlayerTool from '../components/playercontrol/PlayerTool.vue'
 
 export default {
     components: {
