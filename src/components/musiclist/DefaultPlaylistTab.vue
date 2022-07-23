@@ -198,4 +198,11 @@ input[type="checkbox"] {
 .play-list-all .list-box li.playing-now > p {
     color: var(--point-green);
 }
+/* 선택 효과 */
+.list-box ._click {
+    background-color: var( --selected-bg-gray-opacity);
+}
+.list-box ._click .icon-small-square {
+    background-color: rgba(51, 51, 51);
+}
 </style>

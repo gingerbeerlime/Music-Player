@@ -55,7 +55,14 @@
             </ul>
         </li>
         <li class="shuffle">
-            <i class="fa-solid fa-shuffle"></i>
+            <i
+                v-if="$store.state.shuffle"
+                class="fa-solid fa-shuffle shuffle-order"
+            ></i>
+            <i
+                v-else
+                class="fa-solid fa-shuffle basic-order"
+            ></i>
         </li>
         <li class="volume">
             <i class="fa-solid fa-volume-high"></i>
@@ -84,6 +91,7 @@ export default {
         playStatus () {
             return this.$store.state.playStatus
         },
+        // 한곡 반복일 때는 currentPlayOrder 배열에 요소가 하나밖에 없어 예외처리를 해줘야함.
         prevMusic () {
             const finalIdx = this.$store.getters.getCurrentPlaylistCount - 1
             return this.$store.state.currentPlayOrder[finalIdx]
@@ -162,13 +170,22 @@ export default {
     z-index: 100;
 }
 .icon-one {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--bg-black);
     color: var(--font-point-white);
+    border-radius: 50%;
     position: absolute;
-    top: 10px;
-    right: 25%;
+    top: 50%;
+    left: 50%;
     z-index: 110;
     font-size: 3px;
-    line-height: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 10px;
+    margin-left: -5px;
+    margin-top: -5px;
+    text-align: center;
 }
 .fa-volume-high {
     font-size: 12px;
@@ -197,5 +214,11 @@ export default {
     width: 35px;
     height: 100%;
     font-size: 22px;
+}
+.shuffle .shuffle-order {
+    color: var(--font-point-white);
+}
+.shuffle .basic-order {
+    color: var(--font-gray);
 }
 </style>

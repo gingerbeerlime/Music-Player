@@ -23,10 +23,14 @@ export const store = new Vuex.Store({
         currentPosition: 'tab1',
         // repeatMode : ['repeat-all', 'repeat-one', 'no-repeat']
         repeatMode: 'repeat-all',
+        shuffle: false,
         deleteModal: false,
         createModal: false,
         addModal: false,
-        alertModal: false
+        alertModal: false,
+        noRepeatModal: false,
+        repeatAllModal: false,
+        repeatOneModal: false
     },
     getters: {
         getCurrentMusic (state) {
@@ -145,8 +149,8 @@ export const store = new Vuex.Store({
                     movingNum = 0
                 }
                 const movingMusics = state.currentPlayOrder.splice(0, movingNum)
-
                 state.currentPlayOrder.push(...movingMusics)
+
                 state.currentMusicIndex = payload.index
                 state.currentTime = Number(payload.item.playtime)
                 state.playTime = Number(payload.item.playtime)
@@ -175,16 +179,21 @@ export const store = new Vuex.Store({
         // music playing mutations
         startMusic (state) {
             const goNextMusic = () => {
-                const playlist = state.currentPlayOrder
-                const finishedMusic = playlist.splice(0, 1)
-                playlist.push(...finishedMusic)
-                const nextMusic = state.currentPlayOrder[0]
-                state.currentTime = Number(nextMusic.playtime)
-                state.playTime = Number(nextMusic.playtime)
-                if (state.currentMusicIndex === (state.currentPlayOrder.length - 1)) {
-                    state.currentMusicIndex = 0
+                if (state.repeatMode === 'repeat-one') {
+                    const nextMusic = state.currentPlayOrder[0]
+                    state.currentTime = Number(nextMusic.playtime)
                 } else {
-                    state.currentMusicIndex++
+                    const playlist = state.currentPlayOrder
+                    const finishedMusic = playlist.splice(0, 1)
+                    playlist.push(...finishedMusic)
+                    const nextMusic = state.currentPlayOrder[0]
+                    state.currentTime = Number(nextMusic.playtime)
+                    state.playTime = Number(nextMusic.playtime)
+                    if (state.currentMusicIndex === (state.currentPlayOrder.length - 1)) {
+                        state.currentMusicIndex = 0
+                    } else {
+                        state.currentMusicIndex++
+                    }
                 }
             }
 
@@ -198,7 +207,9 @@ export const store = new Vuex.Store({
                         clearInterval(timerId)
                         state.playStatus = false
                         goNextMusic()
-                        state.timerId = startMusicTimer(state.currentTime)
+                        if (state.currentMusicIndex !== 0 || state.repeatMode !== 'no-repeat') {
+                            state.timerId = startMusicTimer(state.currentTime)
+                        }
                     }
                     currentTime -= 0.1
                 }, 100)
@@ -394,12 +405,19 @@ export const store = new Vuex.Store({
                 const currentMusic = state.currentPlayOrder[0]
                 state.currentPlayOrder = []
                 state.currentPlayOrder.push(currentMusic)
+
+                // alert
+                setTimeout(() => {
+                    state.repeatOneModal = true
+                    setTimeout(() => {
+                        state.repeatOneModal = false
+                    }, 1500)
+                }, 300)
             } else if (state.repeatMode === 'no-repeat') {
                 if (state.playingPosition === 'tab1') {
                     const basicList = state.fetchedMusicList
                     state.currentPlayOrder = [...basicList]
-                    // error)currentMusicIndex가 가끔식 1이 증가
-                    console.log(state.currentMusicIndex)
+
                     const movingMusics = state.currentPlayOrder.splice(0, state.currentMusicIndex)
                     state.currentPlayOrder.push(...movingMusics)
                 } else {
@@ -411,10 +429,26 @@ export const store = new Vuex.Store({
                         }
                     }
                     state.currentPlayOrder = [...myPlaylist]
-                    // error)currentMusicIndex가 가끔식 1이 증가
+
                     const movingMusics = state.currentPlayOrder.splice(0, state.currentMusicIndex)
                     state.currentPlayOrder.push(...movingMusics)
                 }
+
+                // alert
+                setTimeout(() => {
+                    state.noRepeatModal = true
+                    setTimeout(() => {
+                        state.noRepeatModal = false
+                    }, 1500)
+                }, 300)
+            } else {
+                // alert
+                setTimeout(() => {
+                    state.repeatAllModal = true
+                    setTimeout(() => {
+                        state.repeatAllModal = false
+                    }, 1500)
+                }, 300)
             }
         },
         // modal

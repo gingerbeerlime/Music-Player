@@ -1,6 +1,6 @@
 <template>
     <div class="add-alert">
-        <p class="message">플레이리스트에 담겼습니다.</p>
+        <p class="message">전체 플레이리스트를 반복합니다.</p>
     </div>
 </template>
 

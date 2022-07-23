@@ -19,6 +19,15 @@
             <transition name="fade" appear>
                 <add-alert v-if="$store.state.alertModal"></add-alert>
             </transition>
+            <transition name="fade" appear>
+                <no-repeat-alert v-if="$store.state.noRepeatModal"></no-repeat-alert>
+            </transition>
+            <transition name="fade" appear>
+                <repeat-all-alert v-if="$store.state.repeatAllModal"></repeat-all-alert>
+            </transition>
+            <transition name="fade" appear>
+                <repeat-one-alert v-if="$store.state.repeatOneModal"></repeat-one-alert>
+            </transition>
         </div>
     </div>
 </template>
@@ -33,6 +42,9 @@ import EditMusic from './components/modal/EditMusic.vue'
 import DeleteModal from './components/modal/DeleteModal.vue'
 import AddToPlaylist from './components/modal/AddToPlaylist.vue'
 import AddAlert from './components/modal/AddAlert.vue'
+import NoRepeatAlert from './components/modal/NoRepeatAlert.vue'
+import RepeatAllAlert from './components/modal/RepeatAllAlert.vue'
+import RepeatOneAlert from './components/modal/RepeatOneAlert.vue'
 
 export default {
     created () {
@@ -47,7 +59,10 @@ export default {
         DeleteModal,
         CreatePlaylist,
         AddToPlaylist,
-        AddAlert
+        AddAlert,
+        NoRepeatAlert,
+        RepeatAllAlert,
+        RepeatOneAlert
     }
 }
 </script>
