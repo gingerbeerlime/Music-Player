@@ -451,6 +451,43 @@ export const store = new Vuex.Store({
                 }, 300)
             }
         },
+        // shuffle
+        changeShuffleMode (state) {
+            state.shuffle = !state.shuffle
+            // repeat-all, no-repeat모드 일 때만
+            if (state.shuffle) {
+                const playlist = [...state.currentPlayOrder]
+                const firstMusic = playlist.shift()
+                playlist.sort(() => Math.random() - 0.5)
+                state.currentPlayOrder = [firstMusic, ...playlist]
+                state.currentMusicIndex = 0
+            } else {
+                // 배열 원래대로 (현재 음악이 가장 앞으로 오게)
+                // shuffle 상태에서 클릭해서 노래 바꾸면 버그
+                if (state.playingPosition === 'tab1') {
+                    const basicList = state.fetchedMusicList
+                    const currentMusic = state.currentPlayOrder[0]
+                    const currentMusicIndex = basicList.indexOf(currentMusic)
+                    state.currentPlayOrder = [...basicList]
+                    const movingMusics = state.currentPlayOrder.splice(0, currentMusicIndex)
+                    state.currentPlayOrder.push(...movingMusics)
+                    state.currentMusicIndex = currentMusicIndex
+                } else {
+                    let myPlaylist
+                    for (let i = 0; i < state.myPlaylists.length; i++) {
+                        if (state.myPlaylists[i].name === state.playingPosition) {
+                            myPlaylist = state.myPlaylists[i].list
+                            break
+                        }
+                    }
+                    state.currentPlayOrder = [...myPlaylist]
+
+                    const movingMusics = state.currentPlayOrder.splice(0, state.currentMusicIndex)
+                    state.currentPlayOrder.push(...movingMusics)
+                }
+            }
+            // alert 띄우기
+        },
         // modal
         showCreateModal (state) {
             state.createModal = true

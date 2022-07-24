@@ -54,7 +54,9 @@
                 </li>
             </ul>
         </li>
-        <li class="shuffle">
+        <li
+            @click="changeShuffleMode"
+            class="shuffle">
             <i
                 v-if="$store.state.shuffle"
                 class="fa-solid fa-shuffle shuffle-order"
@@ -85,6 +87,9 @@ export default {
         },
         changeRepeatMode () {
             this.$store.commit('changeRepeatMode')
+        },
+        changeShuffleMode () {
+            this.$store.commit('changeShuffleMode')
         }
     },
     computed: {
