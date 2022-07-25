@@ -454,7 +454,9 @@ export const store = new Vuex.Store({
         // shuffle
         changeShuffleMode (state) {
             state.shuffle = !state.shuffle
-            // repeat-all, no-repeat모드 일 때만
+
+            if (state.repeatMode === 'repeat-one') return
+
             if (state.shuffle) {
                 const playlist = [...state.currentPlayOrder]
                 const firstMusic = playlist.shift()
@@ -480,10 +482,14 @@ export const store = new Vuex.Store({
                             break
                         }
                     }
+                    // 아래 코드 test해보기, shuffle아닐 때도 playlist에서 currentIndex값이 현재 플레이리스트에 맞게 보이는지 확인
+                    const currentMusic = state.currentPlayOrder[0]
+                    const currentMusicIndex = myPlaylist.indexOf(currentMusic)
+                    console.log(`currentMusicIndex: ${currentMusicIndex}`)
                     state.currentPlayOrder = [...myPlaylist]
-
-                    const movingMusics = state.currentPlayOrder.splice(0, state.currentMusicIndex)
+                    const movingMusics = state.currentPlayOrder.splice(0, currentMusicIndex)
                     state.currentPlayOrder.push(...movingMusics)
+                    state.currentMusicIndex = currentMusicIndex
                 }
             }
             // alert 띄우기
