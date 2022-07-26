@@ -30,7 +30,9 @@ export const store = new Vuex.Store({
         alertModal: false,
         noRepeatModal: false,
         repeatAllModal: false,
-        repeatOneModal: false
+        repeatOneModal: false,
+        shuffleModal: false,
+        noShuffleModal: false
     },
     getters: {
         getCurrentMusic (state) {
@@ -463,6 +465,14 @@ export const store = new Vuex.Store({
                 playlist.sort(() => Math.random() - 0.5)
                 state.currentPlayOrder = [firstMusic, ...playlist]
                 state.currentMusicIndex = 0
+
+                // alert
+                setTimeout(() => {
+                    state.shuffleModal = true
+                    setTimeout(() => {
+                        state.shuffleModal = false
+                    }, 1500)
+                }, 300)
             } else {
                 // 배열 원래대로 (현재 음악이 가장 앞으로 오게)
                 // shuffle 상태에서 클릭해서 노래 바꾸면 버그
@@ -493,6 +503,12 @@ export const store = new Vuex.Store({
                 }
             }
             // alert 띄우기
+            setTimeout(() => {
+                state.noShuffleModal = true
+                setTimeout(() => {
+                    state.noShuffleModal = false
+                }, 1500)
+            }, 300)
         },
         // modal
         showCreateModal (state) {

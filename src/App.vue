@@ -28,6 +28,12 @@
             <transition name="fade" appear>
                 <repeat-one-alert v-if="$store.state.repeatOneModal"></repeat-one-alert>
             </transition>
+            <transition name="fade" appear>
+                <shuffle-alert v-if="$store.state.shuffleModal"></shuffle-alert>
+            </transition>
+            <transition name="fade" appear>
+                <no-shuffle-alert v-if="$store.state.noShuffleModal"></no-shuffle-alert>
+            </transition>
         </div>
     </div>
 </template>
@@ -45,6 +51,8 @@ import AddAlert from './components/modal/AddAlert.vue'
 import NoRepeatAlert from './components/modal/NoRepeatAlert.vue'
 import RepeatAllAlert from './components/modal/RepeatAllAlert.vue'
 import RepeatOneAlert from './components/modal/RepeatOneAlert.vue'
+import ShuffleAlert from './components/modal/ShuffleAlert.vue'
+import NoShuffleAlert from './components/modal/NoShuffleAlert.vue'
 
 export default {
     created () {
@@ -62,7 +70,9 @@ export default {
         AddAlert,
         NoRepeatAlert,
         RepeatAllAlert,
-        RepeatOneAlert
+        RepeatOneAlert,
+        ShuffleAlert,
+        NoShuffleAlert
     }
 }
 </script>
