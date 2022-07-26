@@ -5,7 +5,8 @@ VUE를 이용한 음악 플레이어 개발
 
 ## Description
 가상의 음악 데이터로 음악 재생, 정지, 재생모드 전환, 플레이리스트 생성과 같은 필수 음악 플레이어 기능들을 구현했습니다. 
-
+![demo.png](./images/demo1.png)
+![demo.png](./images/demo2.png)
 
 ### Features
 - [X] 재생/일시중지
