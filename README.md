@@ -1,4 +1,4 @@
-# vue-music-player
+# :musical_note:vue-music-player
 
 ## Project setup
 ```
