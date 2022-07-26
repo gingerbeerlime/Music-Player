@@ -501,14 +501,14 @@ export const store = new Vuex.Store({
                     state.currentPlayOrder.push(...movingMusics)
                     state.currentMusicIndex = currentMusicIndex
                 }
-            }
-            // alert 띄우기
-            setTimeout(() => {
-                state.noShuffleModal = true
+                // alert 띄우기
                 setTimeout(() => {
-                    state.noShuffleModal = false
-                }, 1500)
-            }, 300)
+                    state.noShuffleModal = true
+                    setTimeout(() => {
+                        state.noShuffleModal = false
+                    }, 1500)
+                }, 300)
+            }
         },
         // modal
         showCreateModal (state) {

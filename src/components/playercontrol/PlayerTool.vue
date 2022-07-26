@@ -96,25 +96,103 @@ export default {
         playStatus () {
             return this.$store.state.playStatus
         },
-        // 한곡 반복일 때는 currentPlayOrder 배열에 요소가 하나밖에 없어 예외처리를 해줘야함.
         prevMusic () {
-            const finalIdx = this.$store.getters.getCurrentPlaylistCount - 1
-            return this.$store.state.currentPlayOrder[finalIdx]
+            let targetMusic
+            if (this.$store.state.repeatMode === 'repeat-one') {
+                const currentIndex = this.$store.state.currentMusicIndex
+                const position = this.$store.state.playingPosition
+                if (position === 'tab1') {
+                    const fetchedMusicList = this.$store.state.fetchedMusicList
+                    targetMusic = fetchedMusicList[currentIndex - 1] ?? fetchedMusicList.at(-1)
+                } else {
+                    let playlist
+                    for (let i = 0; i < this.$store.state.myPlaylists.length; i++) {
+                        if (this.$store.state.myPlaylists[i].name === position) {
+                            playlist = this.$store.state.myPlaylists[i].list
+                            break
+                        }
+                    }
+                    targetMusic = playlist[currentIndex - 1] ?? playlist.at(-1)
+                }
+            } else {
+                const finalIdx = this.$store.getters.getCurrentPlaylistCount - 1
+                targetMusic = this.$store.state.currentPlayOrder[finalIdx]
+            }
+            return targetMusic
         },
         nextMusic () {
-            return this.$store.state.currentPlayOrder[1] ?? this.$store.state.currentPlayOrder[0]
+            let targetMusic
+            if (this.$store.state.repeatMode === 'repeat-one') {
+                const currentIndex = this.$store.state.currentMusicIndex
+                const position = this.$store.state.playingPosition
+                if (position === 'tab1') {
+                    const fetchedMusicList = this.$store.state.fetchedMusicList
+                    targetMusic = fetchedMusicList[currentIndex + 1] ?? fetchedMusicList[0]
+                } else {
+                    let playlist
+                    for (let i = 0; i < this.$store.state.myPlaylists.length; i++) {
+                        if (this.$store.state.myPlaylists[i].name === position) {
+                            playlist = this.$store.state.myPlaylists[i].list
+                            break
+                        }
+                    }
+                    targetMusic = playlist[currentIndex + 1] ?? playlist[0]
+                }
+            } else {
+                targetMusic = this.$store.state.currentPlayOrder[1] ?? this.$store.state.currentPlayOrder[0]
+            }
+            return targetMusic
         },
         prevIdx () {
             let index = this.$store.state.currentMusicIndex
-            if (index === 0) index = this.$store.getters.getCurrentPlaylistCount - 1
-            else index--
+
+            if (this.$store.state.repeatMode === 'repeat-one') {
+                const position = this.$store.state.playingPosition
+                if (position === 'tab1') {
+                    if (index === 0) index = this.$store.getters.getTotalMusicCount - 1
+                    else index--
+                } else {
+                    let playlistLength
+                    for (let i = 0; i < this.$store.state.myPlaylists.length; i++) {
+                        if (this.$store.state.myPlaylists[i].name === position) {
+                            playlistLength = this.$store.state.myPlaylists[i].list.length
+                            break
+                        }
+                    }
+                    if (index === 0) index = playlistLength - 1
+                    else index--
+                }
+            } else {
+                if (index === 0) index = this.$store.getters.getCurrentPlaylistCount - 1
+                else index--
+            }
 
             return index
         },
         nextIdx () {
             let index = this.$store.state.currentMusicIndex
-            if (index === (this.$store.getters.getCurrentPlaylistCount - 1)) index = 0
-            else index++
+
+            if (this.$store.state.repeatMode === 'repeat-one') {
+                const position = this.$store.state.playingPosition
+                if (position === 'tab1') {
+                    const fetchedMusicList = this.$store.state.fetchedMusicList
+                    if (index === fetchedMusicList.length - 1) index = 0
+                    else index++
+                } else {
+                    let playlistLength
+                    for (let i = 0; i < this.$store.state.myPlaylists.length; i++) {
+                        if (this.$store.state.myPlaylists[i].name === position) {
+                            playlistLength = this.$store.state.myPlaylists[i].list.length
+                            break
+                        }
+                    }
+                    if (index === playlistLength - 1) index = 0
+                    else index++
+                }
+            } else {
+                if (index === (this.$store.getters.getCurrentPlaylistCount - 1)) index = 0
+                else index++
+            }
 
             return index
         }
