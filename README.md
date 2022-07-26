@@ -1,5 +1,5 @@
 #  Music Player :musical_note::musical_note::musical_note:
-vue를 이용한 음악 플레이어 개발
+vue를 이용한 음악 플레이어 개발  
 멜론 PC버전 뮤직플레이어를 참고하였습니다:smiley:
 
 ## Description
