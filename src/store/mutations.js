@@ -417,7 +417,7 @@ export default {
                 // 아래 코드 test해보기, shuffle아닐 때도 playlist에서 currentIndex값이 현재 플레이리스트에 맞게 보이는지 확인
                 const currentMusic = state.currentPlayOrder[0]
                 const currentMusicIndex = myPlaylist.indexOf(currentMusic)
-                console.log(`currentMusicIndex: ${currentMusicIndex}`)
+                // console.log(`currentMusicIndex: ${currentMusicIndex}`)
                 state.currentPlayOrder = [...myPlaylist]
                 const movingMusics = state.currentPlayOrder.splice(0, currentMusicIndex)
                 state.currentPlayOrder.push(...movingMusics)
